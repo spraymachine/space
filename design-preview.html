@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Space Portfolio — Design System Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --void-black: #000000;
+      --star-white: #E8F4F8;
+      --sun-gold: #FFD700;
+      --earth-blue: #4B9CD3;
+      --mars-red: #C1440E;
+      --jupiter-amber: #C88B3A;
+      --saturn-gold: #EAD6A6;
+      --uranus-teal: #73C2BE;
+      --neptune-blue: #3D5FC4;
+      --nebula-purple: #B794F6;
+      --text-dim: rgba(232, 244, 248, 0.5);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--void-black);
+      color: var(--star-white);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Starfield background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 50% 10%, rgba(255,255,255,0.9), transparent),
+        radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1.5px 1.5px at 15% 85%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 45% 45%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 80% 15%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 60% 75%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1.5px 1.5px at 25% 35%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 85% 55%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,0.6), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    /* Section titles */
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.5rem;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(232,244,248,0.1), transparent);
+      margin: 3rem 0;
+    }
+
+    /* ═══ COLOR PALETTE ═══ */
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .swatch {
+      aspect-ratio: 1.4;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0.75rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .swatch:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    .swatch-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+    }
+
+    .swatch-hex {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      opacity: 0.6;
+    }
+
+    .swatch.light-text .swatch-name,
+    .swatch.light-text .swatch-hex { color: var(--star-white); }
+    .swatch.dark-text .swatch-name,
+    .swatch.dark-text .swatch-hex { color: #111; }
+
+    /* ═══ TYPOGRAPHY ═══ */
+    .type-sample {
+      margin-bottom: 2rem;
+    }
+
+    .type-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+      margin-bottom: 0.5rem;
+    }
+
+    .type-hero {
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      background: linear-gradient(135deg, var(--star-white) 0%, var(--earth-blue) 50%, var(--nebula-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .type-heading {
+      font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .type-body {
+      font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--text-dim);
+      max-width: 600px;
+    }
+
+    .type-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--sun-gold);
+    }
+
+    /* ═══ GLASS CARDS ═══ */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 1.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .glass-card:hover::before {
+      opacity: 1;
+    }
+
+    .glass-card.earth::before { background: radial-gradient(ellipse at 30% 20%, rgba(75,156,211,0.08), transparent 60%); }
+    .glass-card.mars::before { background: radial-gradient(ellipse at 30% 20%, rgba(193,68,14,0.08), transparent 60%); }
+    .glass-card.jupiter::before { background: radial-gradient(ellipse at 30% 20%, rgba(200,139,58,0.08), transparent 60%); }
+    .glass-card.saturn::before { background: radial-gradient(ellipse at 30% 20%, rgba(234,214,166,0.08), transparent 60%); }
+    .glass-card.uranus::before { background: radial-gradient(ellipse at 30% 20%, rgba(115,194,190,0.08), transparent 60%); }
+    .glass-card.neptune::before { background: radial-gradient(ellipse at 30% 20%, rgba(61,95,196,0.08), transparent 60%); }
+
+    .glass-card:hover.earth { border-color: rgba(75,156,211,0.2); box-shadow: 0 8px 32px rgba(75,156,211,0.08); }
+    .glass-card:hover.mars { border-color: rgba(193,68,14,0.2); box-shadow: 0 8px 32px rgba(193,68,14,0.08); }
+    .glass-card:hover.jupiter { border-color: rgba(200,139,58,0.2); box-shadow: 0 8px 32px rgba(200,139,58,0.08); }
+    .glass-card:hover.saturn { border-color: rgba(234,214,166,0.2); box-shadow: 0 8px 32px rgba(234,214,166,0.08); }
+    .glass-card:hover.uranus { border-color: rgba(115,194,190,0.2); box-shadow: 0 8px 32px rgba(115,194,190,0.08); }
+    .glass-card:hover.neptune { border-color: rgba(61,95,196,0.2); box-shadow: 0 8px 32px rgba(61,95,196,0.08); }
+
+    .card-planet-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-body {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ═══ SKILL PILLS ═══ */
+    .pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      padding: 0.4rem 0.9rem;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: var(--star-white);
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+
+    .pill:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+    }
+
+    .pill.accent-gold { color: var(--sun-gold); border-color: rgba(255,215,0,0.15); }
+    .pill.accent-gold:hover { border-color: rgba(255,215,0,0.3); background: rgba(255,215,0,0.05); }
+    .pill.accent-blue { color: var(--earth-blue); border-color: rgba(75,156,211,0.15); }
+    .pill.accent-blue:hover { border-color: rgba(75,156,211,0.3); background: rgba(75,156,211,0.05); }
+    .pill.accent-purple { color: var(--nebula-purple); border-color: rgba(183,148,246,0.15); }
+    .pill.accent-purple:hover { border-color: rgba(183,148,246,0.3); background: rgba(183,148,246,0.05); }
+    .pill.accent-teal { color: var(--uranus-teal); border-color: rgba(115,194,190,0.15); }
+    .pill.accent-teal:hover { border-color: rgba(115,194,190,0.3); background: rgba(115,194,190,0.05); }
+
+    /* ═══ BUTTONS ═══ */
+    .buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .btn-primary {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 0.75rem 1.75rem;
+      border: none;
+      border-radius: 100px;
+      background: var(--sun-gold);
+      color: #000;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(255,215,0,0.3), 0 0 40px rgba(255,215,0,0.1);
+    }
+
+    .btn-outline {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      padding: 0.7rem 1.7rem;
+      border: 1px solid rgba(232,244,248,0.15);
+      border-radius: 100px;
+      background: transparent;
+      color: var(--star-white);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: rgba(232,244,248,0.35);
+      background: rgba(255,255,255,0.03);
+      transform: translateY(-2px);
+    }
+
+    .btn-ghost {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.5rem 0;
+      border: none;
+      background: transparent;
+      color: var(--sun-gold);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .btn-ghost::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--sun-gold);
+      transition: width 0.3s ease;
+    }
+
+    .btn-ghost:hover::after { width: 100%; }
+
+    /* ═══ TESTIMONIAL CARD ═══ */
+    .testimonial {
+      background: rgba(115, 194, 190, 0.03);
+      border: 1px solid rgba(115, 194, 190, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .testimonial-quote {
+      font-size: 1rem;
+      font-style: italic;
+      line-height: 1.7;
+      color: rgba(232,244,248,0.8);
+      margin-bottom: 1.25rem;
+    }
+
+    .testimonial-quote::before {
+      content: '\201C';
+      font-size: 3rem;
+      font-style: normal;
+      color: var(--uranus-teal);
+      opacity: 0.3;
+      position: absolute;
+      top: 0.75rem;
+      left: 1rem;
+    }
+
+    .testimonial-author {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .testimonial-role {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* ═══ CONTACT FORM ═══ */
+    .form-group {
+      margin-bottom: 1.25rem;
+      max-width: 400px;
+    }
+
+    .form-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: var(--star-white);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-input:focus {
+      border-color: rgba(61,95,196,0.4);
+      box-shadow: 0 0 20px rgba(61,95,196,0.1);
+    }
+
+    .form-input::placeholder {
+      color: rgba(232,244,248,0.2);
+    }
+
+    textarea.form-input {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* ═══ SECTION DEMO: Planet color temperature ═══ */
+    .planet-journey {
+      display: flex;
+      gap: 2px;
+      height: 60px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+
+    .planet-bar {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 0.5rem;
+      transition: flex 0.3s ease;
+    }
+
+    .planet-bar:hover { flex: 2; }
+
+    .planet-bar span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.5rem;
+      letter-spacing: 0.1em;
+      opacity: 0.7;
+    }
+
+    /* ═══ NEBULA GLOW DEMO ═══ */
+    .nebula-bg {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      padding: 3rem 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .nebula-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(183,148,246,0.12), transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(75,156,211,0.1), transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(255,215,0,0.05), transparent 50%);
+      z-index: 0;
+    }
+
+    .nebula-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: inherit;
+      z-index: 1;
+    }
+
+    .nebula-bg > * { position: relative; z-index: 2; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- HEADER -->
+    <p class="section-label">Space Portfolio Design System</p>
+    <h1>Mani Dodla</h1>
+    <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1rem;">Visual language for the solar system voyage</p>
+
+    <div class="divider"></div>
+
+    <!-- ═══ COLOR PALETTE ═══ -->
+    <p class="section-label">01 / Color Palette</p>
+    <h2>Planet-Derived Colors</h2>
+    <p class="type-body" style="margin-bottom: 1.5rem;">Each section's accent matches its planet. The palette shifts from warm (Sun/Earth/Mars) to cool (Uranus/Neptune) as you voyage outward.</p>
+
+    <div class="palette">
+      <div class="swatch light-text" style="background: #000000; border-color: rgba(255,255,255,0.1);">
+        <span class="swatch-name">Void Black</span>
+        <span class="swatch-hex">#000000</span>
+      </div>
+      <div class="swatch dark-text" style="background: #E8F4F8;">
+        <span class="swatch-name">Star White</span>
+        <span class="swatch-hex">#E8F4F8</span>
+      </div>
+      <div class="swatch dark-text" style="background: #FFD700;">
+        <span class="swatch-name">Sun Gold</span>
+        <span class="swatch-hex">#FFD700</span>
+      </div>
+      <div class="swatch light-text" style="background: #4B9CD3;">
+        <span class="swatch-name">Earth Blue</span>
+        <span class="swatch-hex">#4B9CD3</span>
+      </div>
+      <div class="swatch light-text" style="background: #C1440E;">
+        <span class="swatch-name">Mars Red</span>
+        <span class="swatch-hex">#C1440E</span>
+      </div>
+      <div class="swatch dark-text" style="background: #C88B3A;">
+        <span class="swatch-name">Jupiter Amber</span>
+        <span class="swatch-hex">#C88B3A</span>
+      </div>
+      <div class="swatch dark-text" style="background: #EAD6A6;">
+        <span class="swatch-name">Saturn Gold</span>
+        <span class="swatch-hex">#EAD6A6</span>
+      </div>
+      <div class="swatch dark-text" style="background: #73C2BE;">
+        <span class="swatch-name">Uranus Teal</span>
+        <span class="swatch-hex">#73C2BE</span>
+      </div>
+      <div class="swatch light-text" style="background: #3D5FC4;">
+        <span class="swatch-name">Neptune Blue</span>
+        <span class="swatch-hex">#3D5FC4</span>
+      </div>
+      <div class="swatch light-text" style="background: #B794F6;">
+        <span class="swatch-name">Nebula Purple</span>
+        <span class="swatch-hex">#B794F6</span>
+      </div>
+    </div>
+
+    <p class="section-label" style="margin-top:1.5rem;">Color Temperature Journey</p>
+    <div class="planet-journey">
+      <div class="planet-bar" style="background: linear-gradient(180deg, #FFD700, #FF6B35);"><span>SUN</span></div>
+      <div class="planet-bar" style="background: linear-gradient(180deg, #4B9CD3, #2a6ea0);"><span>EARTH</span></div>
+      <div class="planet-bar" style="background: linear-gradient(180deg, #C1440E, #8a2f0a);"><span>MARS</span></div>
+      <div class="planet-bar" style="background: linear-gradient(180deg, #C88B3A, #a06e2b);"><span>JUPITER</span></div>
+      <div class="planet-bar" style="background: linear-gradient(180deg, #EAD6A6, #c4b088);"><span>SATURN</span></div>
+      <div class="planet-bar" style="background: linear-gradient(180deg, #73C2BE, #4a9994);"><span>URANUS</span></div>
+      <div class="planet-bar" style="background: linear-gradient(180deg, #3D5FC4, #2a4290);"><span>NEPTUNE</span></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══ TYPOGRAPHY ═══ -->
+    <p class="section-label">02 / Typography</p>
+    <h2>Type Scale</h2>
+
+    <div class="type-sample">
+      <p class="type-meta">HERO / INTER 900 / GRADIENT</p>
+      <p class="type-hero">Mani Dodla</p>
+    </div>
+
+    <div class="type-sample">
+      <p class="type-meta">HEADING / INTER 700</p>
+      <p class="type-heading">Exploring the Cosmos of Code</p>
+    </div>
+
+    <div class="type-sample">
+      <p class="type-meta">BODY / INTER 400 / DIM</p>
+      <p class="type-body">A web developer who crafts digital experiences that push the boundaries of what's possible in the browser. Every project is a new world to explore.</p>
+    </div>
+
+    <div class="type-sample">
+      <p class="type-meta">MONOSPACE / JETBRAINS MONO 400 / ACCENT</p>
+      <p class="type-mono">Mission Log 004 / Web Developer</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══ NEBULA GLOW DEMO ═══ -->
+    <p class="section-label">03 / Atmosphere</p>
+    <h2>Nebula Glow Background</h2>
+
+    <div class="nebula-bg">
+      <p class="type-mono" style="margin-bottom: 0.75rem;">Currently orbiting</p>
+      <p class="type-heading" style="margin-bottom: 0.5rem;">Saturn</p>
+      <p class="type-body" style="margin: 0 auto; text-align: center;">Subtle radial gradients create depth and cosmic atmosphere behind content sections.</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══ GLASS CARDS ═══ -->
+    <p class="section-label">04 / Glass Cards</p>
+    <h2>Planet-Themed Cards</h2>
+    <p class="type-body" style="margin-bottom: 1.5rem;">Each card picks up the accent of its section's planet. Hover to see the glow.</p>
+
+    <div class="cards-grid">
+      <div class="glass-card earth">
+        <p class="card-planet-tag" style="color: var(--earth-blue);">Earth / Hero</p>
+        <p class="card-title">Welcome, Explorer</p>
+        <p class="card-body">Your journey begins here. Earth orbit — the last familiar sight before the voyage outward.</p>
+      </div>
+      <div class="glass-card mars">
+        <p class="card-planet-tag" style="color: var(--mars-red);">Mars / About</p>
+        <p class="card-title">About Mani</p>
+        <p class="card-body">The red planet — personal territory. Who I am, where I've been, what drives me.</p>
+      </div>
+      <div class="glass-card jupiter">
+        <p class="card-planet-tag" style="color: var(--jupiter-amber);">Jupiter / Skills</p>
+        <p class="card-title">Technical Arsenal</p>
+        <p class="card-body">The largest planet for the broadest skillset. Frontend, backend, tools, and everything in between.</p>
+      </div>
+      <div class="glass-card saturn">
+        <p class="card-planet-tag" style="color: var(--saturn-gold);">Saturn / Projects</p>
+        <p class="card-title">Orbital Works</p>
+        <p class="card-body">Projects orbit like Saturn's rings. Drag to explore. Click to dive in.</p>
+      </div>
+      <div class="glass-card uranus">
+        <p class="card-planet-tag" style="color: var(--uranus-teal);">Uranus / Testimonials</p>
+        <p class="card-title">Voices from Afar</p>
+        <p class="card-body">What others say. Distant but impactful — signals received from collaborators.</p>
+      </div>
+      <div class="glass-card neptune">
+        <p class="card-planet-tag" style="color: var(--neptune-blue);">Neptune / Contact</p>
+        <p class="card-title">Send a Signal</p>
+        <p class="card-body">The edge of the system. Reach out into the void — let's connect.</p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══ SKILL PILLS ═══ -->
+    <p class="section-label">05 / Skill Pills</p>
+    <h2>Tech Stack Tags</h2>
+
+    <p class="type-mono" style="font-size: 0.6rem; margin-bottom: 0.75rem;">Frontend</p>
+    <div class="pills-row">
+      <span class="pill accent-blue">React</span>
+      <span class="pill accent-blue">Next.js</span>
+      <span class="pill accent-blue">TypeScript</span>
+      <span class="pill accent-blue">Tailwind CSS</span>
+      <span class="pill accent-blue">Three.js</span>
+      <span class="pill accent-blue">GSAP</span>
+    </div>
+
+    <p class="type-mono" style="font-size: 0.6rem; margin-bottom: 0.75rem;">Backend</p>
+    <div class="pills-row">
+      <span class="pill accent-purple">Node.js</span>
+      <span class="pill accent-purple">Express</span>
+      <span class="pill accent-purple">PostgreSQL</span>
+      <span class="pill accent-purple">MongoDB</span>
+    </div>
+
+    <p class="type-mono" style="font-size: 0.6rem; margin-bottom: 0.75rem;">Tools</p>
+    <div class="pills-row">
+      <span class="pill accent-teal">Git</span>
+      <span class="pill accent-teal">Docker</span>
+      <span class="pill accent-teal">Figma</span>
+      <span class="pill accent-teal">Vercel</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══ BUTTONS ═══ -->
+    <p class="section-label">06 / Buttons</p>
+    <h2>Interactive Elements</h2>
+
+    <div class="buttons-row" style="margin-bottom: 2rem;">
+      <button class="btn-primary">Download Resume</button>
+      <button class="btn-outline">View Project</button>
+      <button class="btn-ghost">Explore More &rarr;</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══ TESTIMONIAL ═══ -->
+    <p class="section-label">07 / Testimonials</p>
+    <h2>Quote Card</h2>
+
+    <div class="testimonial">
+      <p class="testimonial-quote">Working with Mani was like watching someone build a rocket in real time. He turned our vague ideas into a polished, performant product that exceeded every expectation.</p>
+      <p class="testimonial-author">Jane Doe</p>
+      <p class="testimonial-role">CTO, Placeholder Inc.</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══ CONTACT FORM ═══ -->
+    <p class="section-label">08 / Contact Form</p>
+    <h2>Neptune Zone</h2>
+
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input class="form-input" type="text" placeholder="Your name" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" placeholder="your@email.com" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Message</label>
+      <textarea class="form-input" placeholder="Send a signal into the cosmos..."></textarea>
+    </div>
+    <button class="btn-primary" style="margin-top: 0.5rem;">Transmit Message</button>
+
+    <div class="divider"></div>
+
+    <p style="text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.3em; padding-bottom: 2rem;">END OF DESIGN SYSTEM PREVIEW</p>
+
+  </div>
+</body>
+</html>
