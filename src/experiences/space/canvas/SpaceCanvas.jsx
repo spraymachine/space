@@ -2,17 +2,21 @@ import { Canvas } from '@react-three/fiber';
 import { Suspense } from 'react';
 import * as THREE from 'three';
 import Starfield from './Starfield';
+import SunGlow from './effects/SunGlow';
+import CameraRig from './CameraRig';
+import Earth from './planets/Earth';
+import Mars from './planets/Mars';
+import Jupiter from './planets/Jupiter';
+import Saturn from './planets/Saturn';
+import Uranus from './planets/Uranus';
+import Neptune from './planets/Neptune';
 
-export const PLANET_POSITIONS = {
-  earth:   [2, 0, 0],
-  mars:    [1.5, -0.5, -30],
-  jupiter: [-2, 0.5, -65],
-  saturn:  [0, 0, -110],
-  uranus:  [2, -0.3, -150],
-  neptune: [-1.5, 0.2, -190],
-};
+export { PLANET_POSITIONS } from './constants';
+import { PLANET_POSITIONS } from './constants';
 
 export default function SpaceCanvas({ gpuTier, scrollProgressRef }) {
+  const seg = gpuTier.planetDetail;
+
   return (
     <Canvas
       style={{
@@ -43,6 +47,16 @@ export default function SpaceCanvas({ gpuTier, scrollProgressRef }) {
 
       <Suspense fallback={null}>
         <Starfield count={gpuTier.starCount} />
+        <SunGlow position={[0, 2, 20]} />
+
+        <Earth position={PLANET_POSITIONS.earth} segments={seg} />
+        <Mars position={PLANET_POSITIONS.mars} segments={seg} />
+        <Jupiter position={PLANET_POSITIONS.jupiter} segments={seg} />
+        <Saturn position={PLANET_POSITIONS.saturn} segments={seg} />
+        <Uranus position={PLANET_POSITIONS.uranus} segments={seg} />
+        <Neptune position={PLANET_POSITIONS.neptune} segments={seg} />
+
+        <CameraRig scrollProgressRef={scrollProgressRef} />
       </Suspense>
     </Canvas>
   );
