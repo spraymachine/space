@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -26,7 +26,8 @@ export default function Starfield({ count = 2000 }) {
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
-  useMemo(() => {
+  // useEffect runs after render when meshRef.current is available
+  useEffect(() => {
     if (!meshRef.current) return;
     for (let i = 0; i < count; i++) {
       dummy.position.set(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
@@ -55,7 +56,7 @@ export default function Starfield({ count = 2000 }) {
 
   return (
     <instancedMesh ref={meshRef} args={[null, null, count]}>
-      <sphereGeometry args={[1, 4, 4]} />
+      <sphereGeometry args={[1, 6, 6]} />
       <meshBasicMaterial color="#ffffff" />
     </instancedMesh>
   );

@@ -6,6 +6,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["serve", "-l", "3456", "--no-clipboard", "."],
       "port": 3456
+    },
+    {
+      "name": "vite-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "--port", "5174"],
+      "port": 5174
     }
   ]
 }

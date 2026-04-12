@@ -14,7 +14,7 @@ import Neptune from './planets/Neptune';
 export { PLANET_POSITIONS } from './constants';
 import { PLANET_POSITIONS } from './constants';
 
-export default function SpaceCanvas({ gpuTier, scrollProgressRef }) {
+export default function SpaceCanvas({ gpuTier, scrollProgressRef, orbitAngleRef, isOrbiting }) {
   const seg = gpuTier.planetDetail;
 
   return (
@@ -47,7 +47,7 @@ export default function SpaceCanvas({ gpuTier, scrollProgressRef }) {
 
       <Suspense fallback={null}>
         <Starfield count={gpuTier.starCount} />
-        <SunGlow position={[0, 2, 20]} />
+        <SunGlow position={[30, 15, 80]} />
 
         <Earth position={PLANET_POSITIONS.earth} segments={seg} />
         <Mars position={PLANET_POSITIONS.mars} segments={seg} />
@@ -56,7 +56,11 @@ export default function SpaceCanvas({ gpuTier, scrollProgressRef }) {
         <Uranus position={PLANET_POSITIONS.uranus} segments={seg} />
         <Neptune position={PLANET_POSITIONS.neptune} segments={seg} />
 
-        <CameraRig scrollProgressRef={scrollProgressRef} />
+        <CameraRig
+          scrollProgressRef={scrollProgressRef}
+          orbitAngleRef={orbitAngleRef}
+          isOrbiting={isOrbiting}
+        />
       </Suspense>
     </Canvas>
   );
