@@ -82,6 +82,18 @@ section {
   }
 }
 
+/* ── Project orbit drag hint animations ── */
+@keyframes dragHint {
+  0%, 100% { transform: translateX(0); }
+  30% { transform: translateX(-8px); }
+  70% { transform: translateX(8px); }
+}
+
+@keyframes dragPulse {
+  0%, 100% { border-color: rgba(234, 214, 166, 0.25); transform: scale(1); }
+  50% { border-color: rgba(234, 214, 166, 0.6); transform: scale(1.1); }
+}
+
 /* ── Project detail panel slide-in ── */
 @keyframes slideInRight {
   from {

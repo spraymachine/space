@@ -165,13 +165,14 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
     const x = 50 + Math.cos(baseAngle) * radiusX;
     const y = 50 + Math.sin(baseAngle) * radiusY;
 
-    // Depth simulation — items "behind" Saturn are smaller/dimmer
+    // Depth simulation — items "behind" Saturn are fully hidden for 3D depth
     const depth = (Math.sin(baseAngle) + 1) / 2; // 0 = front, 1 = back
-    const scale = 0.55 + 0.45 * (1 - depth);
+    const isBehind = depth > 0.45;
+    const scale = isBehind ? 0 : 0.6 + 0.4 * (1 - depth);
     const zIndex = Math.round((1 - depth) * 10);
-    const opacity = 0.25 + 0.75 * (1 - depth);
+    const opacity = isBehind ? 0 : 0.4 + 0.6 * (1 - depth);
 
-    return { x, y, scale, zIndex, opacity, isBehind: depth > 0.6 };
+    return { x, y, scale, zIndex, opacity, isBehind };
   };
 
   return (
@@ -256,26 +257,67 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
           }}
         />
 
-        {/* Drag hint */}
+        {/* Drag hint — animated and prominent */}
         {isOrbiting && !selectedProject && (
-          <p
+          <div
             ref={hintRef}
-            className="font-mono"
             style={{
               position: 'absolute',
-              bottom: 'clamp(2rem, 5vh, 3rem)',
+              bottom: 'clamp(2.5rem, 6vh, 4rem)',
               left: '50%',
               transform: 'translateX(-50%)',
-              fontSize: '0.6rem',
-              letterSpacing: '0.2em',
-              color: 'var(--text-dim)',
-              textTransform: 'uppercase',
               zIndex: 20,
               opacity: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.75rem',
+              pointerEvents: 'none',
             }}
           >
-            Drag to orbit &middot; Tap a project
-          </p>
+            {/* Animated drag arrow indicator */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                animation: 'dragHint 2s ease-in-out infinite',
+              }}
+            >
+              <span style={{ fontSize: '1.2rem', opacity: 0.4 }}>&#8592;</span>
+              <div
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  border: '2px solid rgba(234, 214, 166, 0.4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  animation: 'dragPulse 2s ease-in-out infinite',
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(234,214,166,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 11V6a2 2 0 0 0-4 0v5" />
+                  <path d="M14 10V4a2 2 0 0 0-4 0v7" />
+                  <path d="M10 10.5V8a2 2 0 0 0-4 0v8a6 6 0 0 0 12 0v-4a2 2 0 0 0-4 0" />
+                </svg>
+              </div>
+              <span style={{ fontSize: '1.2rem', opacity: 0.4 }}>&#8594;</span>
+            </div>
+            <p
+              className="font-mono"
+              style={{
+                fontSize: '0.65rem',
+                letterSpacing: '0.2em',
+                color: 'var(--saturn-gold, #EAD6A6)',
+                textTransform: 'uppercase',
+                textAlign: 'center',
+              }}
+            >
+              Drag to explore &middot; Click a project
+            </p>
+          </div>
         )}
 
         {/* Project nodes — positioned along the ring */}
