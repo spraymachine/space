@@ -1,26 +1,27 @@
+import { useState } from 'react';
+
 export default function SkillPill({ name, accent }) {
+  const [active, setActive] = useState(false);
+
   return (
     <span
       className="font-mono"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+      onTouchStart={() => setActive(true)}
+      onTouchEnd={() => setActive(false)}
       style={{
-        fontSize: '0.65rem',
+        fontSize: 'clamp(0.55rem, 1.5vw, 0.65rem)',
         letterSpacing: '0.1em',
-        padding: '0.4rem 0.9rem',
+        padding: '0.35rem 0.75rem',
         borderRadius: '100px',
         border: `1px solid ${accent || 'rgba(255,255,255,0.08)'}`,
-        background: 'rgba(255,255,255,0.03)',
+        background: active ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.03)',
         color: accent || 'var(--star-white)',
-        transition: 'all 0.3s ease',
+        transition: 'all 0.2s ease',
+        transform: active ? 'translateY(-1px)' : 'translateY(0)',
         cursor: 'default',
         display: 'inline-block',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px)';
-        e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
       }}
     >
       {name}

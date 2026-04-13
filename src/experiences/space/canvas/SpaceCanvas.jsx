@@ -16,6 +16,7 @@ import { PLANET_POSITIONS } from './constants';
 
 export default function SpaceCanvas({ gpuTier, scrollProgressRef, orbitAngleRef, isOrbiting }) {
   const seg = gpuTier.planetDetail;
+  const mobile = gpuTier.mobile;
 
   return (
     <Canvas
@@ -28,18 +29,18 @@ export default function SpaceCanvas({ gpuTier, scrollProgressRef, orbitAngleRef,
         zIndex: 1,
         pointerEvents: 'none',
       }}
-      camera={{ position: [0, 0, 5], fov: 50, near: 0.1, far: 500 }}
+      camera={{ position: [0, 0, 5], fov: mobile ? 60 : 50, near: 0.1, far: 500 }}
       dpr={gpuTier.dpr}
       frameloop="always"
-      performance={{ min: 0.5 }}
+      performance={{ min: mobile ? 0.3 : 0.5 }}
       onCreated={({ gl }) => {
         gl.setClearColor(0x000000, 1);
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = 1.2;
       }}
       gl={{
-        antialias: gpuTier.tier !== 'low',
-        powerPreference: 'high-performance',
+        antialias: !mobile && gpuTier.tier !== 'low',
+        powerPreference: mobile ? 'low-power' : 'high-performance',
       }}
     >
       <ambientLight intensity={0.3} />

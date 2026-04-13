@@ -15,6 +15,8 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
   const hintRef = useRef();
   const isDragging = useRef(false);
   const lastX = useRef(0);
+  const panelRef = useRef();
+  const panelTouchStart = useRef(null);
 
   const [isOrbiting, setIsOrbiting] = useState(false);
   const [orbitAngle, setOrbitAngle] = useState(0);
@@ -22,6 +24,8 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
   const [hasEntered, setHasEntered] = useState(false);
   const [contentOpacity, setContentOpacity] = useState(0);
   const hasEnteredRef = useRef(false);
+
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 
   // Sync orbiting state up to parent
   useEffect(() => {
@@ -43,7 +47,6 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
       end: '+=200%',
       pin: true,
       onUpdate: (self) => {
-        // Fade in during first 10%, hold, fade out during last 10% of pin
         const p = self.progress;
         if (p < 0.1) {
           setContentOpacity(p / 0.1);
@@ -77,7 +80,6 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
   useEffect(() => {
     if (!hasEntered) return;
 
-    // Animate header
     if (headerRef.current) {
       gsap.fromTo(headerRef.current,
         { opacity: 0, y: -30 },
@@ -85,7 +87,6 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
       );
     }
 
-    // Stagger project nodes in from the ring edges
     projectRefs.current.forEach((el, i) => {
       if (!el) return;
       gsap.fromTo(el,
@@ -101,7 +102,6 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
       );
     });
 
-    // Hint text
     if (hintRef.current) {
       gsap.fromTo(hintRef.current,
         { opacity: 0 },
@@ -110,7 +110,7 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
     }
   }, [hasEntered]);
 
-  // Drag handlers — orbit angle drives both DOM ring positions AND 3D camera
+  // Drag handlers
   const handleDragStart = useCallback((clientX) => {
     if (!isOrbiting || selectedProject) return;
     isDragging.current = true;
@@ -119,10 +119,10 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
 
   const handleDragMove = useCallback((clientX) => {
     if (!isDragging.current) return;
-    const delta = (clientX - lastX.current) * 0.005;
+    const delta = (clientX - lastX.current) * (isMobile ? 0.008 : 0.005);
     lastX.current = clientX;
     setOrbitAngle(prev => prev + delta);
-  }, []);
+  }, [isMobile]);
 
   const handleDragEnd = useCallback(() => {
     isDragging.current = false;
@@ -156,17 +156,28 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
     };
   }, [isOrbiting, handleDragStart, handleDragMove, handleDragEnd]);
 
-  // Position projects in an elliptical ring aligned to Saturn's ring tilt
+  // Swipe-to-close for mobile detail panel
+  const handlePanelTouchStart = useCallback((e) => {
+    panelTouchStart.current = e.touches[0].clientY;
+  }, []);
+
+  const handlePanelTouchEnd = useCallback((e) => {
+    if (panelTouchStart.current === null) return;
+    const delta = e.changedTouches[0].clientY - panelTouchStart.current;
+    if (delta > 80) setSelectedProject(null); // swipe down > 80px = close
+    panelTouchStart.current = null;
+  }, []);
+
+  // Responsive orbit ring
   const getProjectPosition = (index, total) => {
     const baseAngle = (index / total) * Math.PI * 2 + orbitAngle;
-    const radiusX = 40; // horizontal stretch
-    const radiusY = 14; // vertical compress (ring tilt perspective)
+    const radiusX = isMobile ? 36 : 40;
+    const radiusY = isMobile ? 18 : 14;
 
     const x = 50 + Math.cos(baseAngle) * radiusX;
     const y = 50 + Math.sin(baseAngle) * radiusY;
 
-    // Depth simulation — items "behind" Saturn are fully hidden for 3D depth
-    const depth = (Math.sin(baseAngle) + 1) / 2; // 0 = front, 1 = back
+    const depth = (Math.sin(baseAngle) + 1) / 2;
     const isBehind = depth > 0.45;
     const scale = isBehind ? 0 : 0.6 + 0.4 * (1 - depth);
     const zIndex = Math.round((1 - depth) * 10);
@@ -193,8 +204,8 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
         ref={headerRef}
         style={{
           position: 'absolute',
-          top: 'clamp(1.5rem, 4vh, 3rem)',
-          left: 'clamp(1.5rem, 4vw, 3rem)',
+          top: 'clamp(1rem, 3vh, 3rem)',
+          left: 'clamp(1rem, 3vw, 3rem)',
           zIndex: 20,
           opacity: hasEntered ? contentOpacity : 0,
         }}
@@ -202,7 +213,7 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
         <p
           className="font-mono"
           style={{
-            fontSize: '0.6rem',
+            fontSize: 'clamp(0.5rem, 1.5vw, 0.6rem)',
             letterSpacing: '0.25em',
             color: 'var(--saturn-gold)',
             textTransform: 'uppercase',
@@ -210,7 +221,7 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
         >
           Saturn / Projects
         </p>
-        <h2 style={{ fontSize: 'clamp(1.25rem, 3vw, 2rem)', fontWeight: 700, marginTop: '0.25rem' }}>
+        <h2 style={{ fontSize: 'clamp(1.1rem, 3vw, 2rem)', fontWeight: 700, marginTop: '0.25rem' }}>
           Orbital Works
         </h2>
       </div>
@@ -229,41 +240,28 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
           pointerEvents: contentOpacity < 0.1 ? 'none' : 'auto',
         }}
       >
-        {/* Orbit ring guides (subtle visual ring) */}
+        {/* Orbit ring guides */}
         <div
           style={{
             position: 'absolute',
             left: '50%',
             top: '50%',
-            width: '80%',
-            height: '28%',
+            width: isMobile ? '72%' : '80%',
+            height: isMobile ? '36%' : '28%',
             transform: 'translate(-50%, -50%)',
             border: '1px solid rgba(234, 214, 166, 0.06)',
             borderRadius: '50%',
             pointerEvents: 'none',
           }}
         />
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            width: '84%',
-            height: '30%',
-            transform: 'translate(-50%, -50%)',
-            border: '1px solid rgba(234, 214, 166, 0.03)',
-            borderRadius: '50%',
-            pointerEvents: 'none',
-          }}
-        />
 
-        {/* Drag hint — animated and prominent */}
+        {/* Drag hint */}
         {isOrbiting && !selectedProject && (
           <div
             ref={hintRef}
             style={{
               position: 'absolute',
-              bottom: 'clamp(2.5rem, 6vh, 4rem)',
+              bottom: 'clamp(1.5rem, 4vh, 4rem)',
               left: '50%',
               transform: 'translateX(-50%)',
               zIndex: 20,
@@ -271,24 +269,23 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: '0.75rem',
+              gap: '0.5rem',
               pointerEvents: 'none',
             }}
           >
-            {/* Animated drag arrow indicator */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '1rem',
+                gap: '0.75rem',
                 animation: 'dragHint 2s ease-in-out infinite',
               }}
             >
-              <span style={{ fontSize: '1.2rem', opacity: 0.4 }}>&#8592;</span>
+              <span style={{ fontSize: isMobile ? '1rem' : '1.2rem', opacity: 0.4, color: 'var(--saturn-gold)' }}>&#8592;</span>
               <div
                 style={{
-                  width: '36px',
-                  height: '36px',
+                  width: isMobile ? '30px' : '36px',
+                  height: isMobile ? '30px' : '36px',
                   borderRadius: '50%',
                   border: '2px solid rgba(234, 214, 166, 0.4)',
                   display: 'flex',
@@ -297,37 +294,37 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
                   animation: 'dragPulse 2s ease-in-out infinite',
                 }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(234,214,166,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width={isMobile ? '14' : '18'} height={isMobile ? '14' : '18'} viewBox="0 0 24 24" fill="none" stroke="rgba(234,214,166,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 11V6a2 2 0 0 0-4 0v5" />
                   <path d="M14 10V4a2 2 0 0 0-4 0v7" />
                   <path d="M10 10.5V8a2 2 0 0 0-4 0v8a6 6 0 0 0 12 0v-4a2 2 0 0 0-4 0" />
                 </svg>
               </div>
-              <span style={{ fontSize: '1.2rem', opacity: 0.4 }}>&#8594;</span>
+              <span style={{ fontSize: isMobile ? '1rem' : '1.2rem', opacity: 0.4, color: 'var(--saturn-gold)' }}>&#8594;</span>
             </div>
             <p
               className="font-mono"
               style={{
-                fontSize: '0.65rem',
-                letterSpacing: '0.2em',
+                fontSize: isMobile ? '0.55rem' : '0.65rem',
+                letterSpacing: '0.15em',
                 color: 'var(--saturn-gold, #EAD6A6)',
                 textTransform: 'uppercase',
                 textAlign: 'center',
               }}
             >
-              Drag to explore &middot; Click a project
+              {isMobile ? 'Swipe to explore · Tap a project' : 'Drag to explore · Click a project'}
             </p>
           </div>
         )}
 
-        {/* Project nodes — positioned along the ring */}
+        {/* Project nodes */}
         {projects.map((project, i) => {
           const pos = getProjectPosition(i, projects.length);
           return (
             <button
               key={project.id}
               ref={(el) => (projectRefs.current[i] = el)}
-              onClick={() => setSelectedProject(project)}
+              onClick={() => !pos.isBehind && setSelectedProject(project)}
               aria-label={`View project: ${project.name}`}
               style={{
                 position: 'absolute',
@@ -343,32 +340,28 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '0.5rem',
+                gap: isMobile ? '0.3rem' : '0.5rem',
                 padding: '0.5rem',
                 pointerEvents: pos.isBehind ? 'none' : 'auto',
               }}
             >
-              {/* Glowing orb */}
               <div
                 style={{
-                  width: 'clamp(28px, 4vw, 44px)',
-                  height: 'clamp(28px, 4vw, 44px)',
+                  width: isMobile ? 'clamp(24px, 8vw, 36px)' : 'clamp(28px, 4vw, 44px)',
+                  height: isMobile ? 'clamp(24px, 8vw, 36px)' : 'clamp(28px, 4vw, 44px)',
                   borderRadius: '50%',
                   background: `radial-gradient(circle at 35% 35%, ${project.color}, ${project.color}66)`,
-                  boxShadow: `0 0 15px ${project.color}55, 0 0 30px ${project.color}22, inset 0 0 8px ${project.color}33`,
-                  transition: 'box-shadow 0.3s ease',
+                  boxShadow: `0 0 12px ${project.color}55, 0 0 24px ${project.color}22`,
                 }}
               />
-              {/* Label */}
               <span
                 className="font-mono"
                 style={{
-                  fontSize: '0.5rem',
-                  letterSpacing: '0.12em',
-                  color: pos.isBehind ? 'rgba(232,244,248,0.3)' : 'var(--star-white)',
+                  fontSize: isMobile ? '0.4rem' : '0.5rem',
+                  letterSpacing: '0.1em',
+                  color: 'var(--star-white)',
                   whiteSpace: 'nowrap',
                   textShadow: '0 0 12px rgba(0,0,0,0.9)',
-                  transition: 'color 0.3s ease',
                 }}
               >
                 {project.name}
@@ -378,35 +371,90 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
         })}
       </div>
 
-      {/* Project detail panel — slides in from right (bottom sheet on mobile) */}
+      {/* Backdrop overlay for mobile detail panel */}
       {selectedProject && (
         <div
-          className="project-detail-panel"
+          onClick={() => setSelectedProject(null)}
           style={{
-            position: 'absolute',
-            right: 0,
-            top: 0,
-            bottom: 0,
-            width: 'clamp(300px, 40vw, 450px)',
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            zIndex: 25,
+            animation: 'fadeIn 0.3s ease-out',
+          }}
+        />
+      )}
+
+      {/* Project detail panel */}
+      {selectedProject && (
+        <div
+          ref={panelRef}
+          className="project-detail-panel"
+          onTouchStart={handlePanelTouchStart}
+          onTouchEnd={handlePanelTouchEnd}
+          style={{
+            position: isMobile ? 'fixed' : 'absolute',
+            right: isMobile ? 0 : 0,
+            left: isMobile ? 0 : 'auto',
+            bottom: isMobile ? 0 : 'auto',
+            top: isMobile ? 'auto' : 0,
+            width: isMobile ? '100%' : 'clamp(300px, 40vw, 450px)',
+            maxHeight: isMobile ? '75vh' : 'none',
+            height: isMobile ? 'auto' : '100%',
             zIndex: 30,
             display: 'flex',
-            alignItems: 'center',
-            padding: 'clamp(1rem, 3vw, 2rem)',
+            alignItems: isMobile ? 'flex-start' : 'center',
+            padding: isMobile ? '0' : 'clamp(1rem, 3vw, 2rem)',
             animation: 'slideInRight 0.4s ease-out',
+            overflowY: isMobile ? 'auto' : 'visible',
+            borderRadius: isMobile ? '20px 20px 0 0' : 0,
+            WebkitOverflowScrolling: 'touch',
           }}
         >
-          <GlassCard accent={selectedProject.color} style={{ width: '100%' }}>
+          {/* Swipe handle for mobile */}
+          {isMobile && (
+            <div style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              padding: '0.75rem 0 0.25rem',
+              position: 'sticky',
+              top: 0,
+              zIndex: 5,
+            }}>
+              <div style={{
+                width: '36px',
+                height: '4px',
+                borderRadius: '2px',
+                background: 'rgba(255,255,255,0.2)',
+              }} />
+            </div>
+          )}
+          <GlassCard
+            accent={selectedProject.color}
+            style={{
+              width: '100%',
+              borderRadius: isMobile ? '20px 20px 0 0' : '16px',
+              paddingBottom: isMobile ? 'calc(1.25rem + env(safe-area-inset-bottom))' : undefined,
+            }}
+          >
             <button
               onClick={() => setSelectedProject(null)}
               style={{
                 position: 'absolute',
                 top: '1rem',
                 right: '1rem',
-                background: 'transparent',
+                background: 'rgba(255,255,255,0.06)',
                 border: 'none',
-                color: 'var(--text-dim)',
+                color: 'var(--star-white)',
                 cursor: 'pointer',
-                fontSize: '1.2rem',
+                fontSize: '1rem',
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
               aria-label="Close project detail"
             >
@@ -425,33 +473,17 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
             </p>
             <h3
               style={{
-                fontSize: 'clamp(1.2rem, 2.5vw, 1.5rem)',
+                fontSize: 'clamp(1.1rem, 5vw, 1.5rem)',
                 fontWeight: 700,
                 marginBottom: '0.75rem',
+                paddingRight: '2rem',
               }}
             >
               {selectedProject.name}
             </h3>
-            <div
-              style={{
-                width: '100%',
-                aspectRatio: '16/9',
-                borderRadius: '8px',
-                background: `linear-gradient(135deg, ${selectedProject.color}22, ${selectedProject.color}08)`,
-                border: '1px solid rgba(255,255,255,0.04)',
-                marginBottom: '1rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <span className="font-mono" style={{ fontSize: '0.6rem', color: 'var(--text-dim)' }}>
-                Screenshot
-              </span>
-            </div>
             <p
               style={{
-                fontSize: '0.85rem',
+                fontSize: 'clamp(0.8rem, 2.5vw, 0.9rem)',
                 lineHeight: 1.6,
                 color: 'var(--text-dim)',
                 marginBottom: '1rem',
@@ -459,44 +491,52 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
             >
               {selectedProject.description}
             </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '1.25rem' }}>
               {selectedProject.techStack.map((tech) => (
                 <SkillPill key={tech} name={tech} accent={selectedProject.color} />
               ))}
             </div>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <a
                 href={selectedProject.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="project-link-btn"
                 style={{
                   fontSize: '0.75rem',
                   fontWeight: 600,
-                  padding: '0.5rem 1.25rem',
+                  padding: '0.6rem 1.5rem',
                   borderRadius: '100px',
                   background: selectedProject.color,
                   color: '#000',
                   textDecoration: 'none',
+                  textAlign: 'center',
+                  flex: isMobile ? '1' : 'none',
                 }}
               >
                 View Live
               </a>
-              <a
-                href={selectedProject.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 500,
-                  padding: '0.5rem 1.25rem',
-                  borderRadius: '100px',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  color: 'var(--star-white)',
-                  textDecoration: 'none',
-                }}
-              >
-                GitHub
-              </a>
+              {selectedProject.githubUrl !== '#' && (
+                <a
+                  href={selectedProject.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-link-btn"
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 500,
+                    padding: '0.6rem 1.5rem',
+                    borderRadius: '100px',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    color: 'var(--star-white)',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    flex: isMobile ? '1' : 'none',
+                  }}
+                >
+                  GitHub
+                </a>
+              )}
             </div>
           </GlassCard>
         </div>

@@ -18,6 +18,7 @@
 
 html {
   scroll-behavior: auto;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -27,6 +28,7 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: none;
 }
 
 .font-mono {
@@ -49,40 +51,23 @@ body {
   }
 }
 
+/* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(232, 244, 248, 0.1); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(232, 244, 248, 0.2); }
 
-/* ── Mobile-first section spacing ── */
+/* ── Section spacing ── */
 section {
   padding: clamp(1rem, 5vw, 4rem);
 }
 
-/* ── Mobile project detail panel ── */
-@media (max-width: 768px) {
-  .project-detail-panel {
-    position: fixed !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    top: auto !important;
-    width: 100% !important;
-    max-height: 70vh;
-    border-radius: 20px 20px 0 0;
-    overflow-y: auto;
-  }
+/* ── Keyframes ── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* ── Ensure touch targets are 44px+ ── */
-@media (max-width: 768px) {
-  button, a {
-    min-height: 44px;
-    min-width: 44px;
-  }
-}
-
-/* ── Project orbit drag hint animations ── */
 @keyframes dragHint {
   0%, 100% { transform: translateX(0); }
   30% { transform: translateX(-8px); }
@@ -94,7 +79,6 @@ section {
   50% { border-color: rgba(234, 214, 166, 0.6); transform: scale(1.1); }
 }
 
-/* ── Project detail panel slide-in ── */
 @keyframes slideInRight {
   from {
     opacity: 0;
@@ -106,7 +90,47 @@ section {
   }
 }
 
+/* ══════════════════════════════════════ */
+/* ══  MOBILE  (≤768px)               ══ */
+/* ══════════════════════════════════════ */
 @media (max-width: 768px) {
+  /* Reduce backdrop-filter on mobile for performance */
+  .glass {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Tighter section padding */
+  section {
+    padding: clamp(0.75rem, 4vw, 2rem);
+  }
+
+  /* Touch targets */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Project link buttons in detail panel should not enforce 44px min-width */
+  .project-link-btn {
+    min-width: unset;
+  }
+
+  /* Project detail panel — bottom sheet */
+  .project-detail-panel {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    max-height: 75vh;
+    border-radius: 20px 20px 0 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Slide up from bottom on mobile */
   @keyframes slideInRight {
     from {
       opacity: 0;
@@ -116,5 +140,47 @@ section {
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  /* Hide scrollbar in bottom sheet */
+  .project-detail-panel::-webkit-scrollbar {
+    display: none;
+  }
+  .project-detail-panel {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* ══════════════════════════════════════ */
+/* ══  SMALL PHONES  (≤375px)         ══ */
+/* ══════════════════════════════════════ */
+@media (max-width: 375px) {
+  section {
+    padding: 0.5rem;
+  }
+
+  .glass {
+    border-radius: 12px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+}
+
+/* ══════════════════════════════════════ */
+/* ══  LANDSCAPE MOBILE               ══ */
+/* ══════════════════════════════════════ */
+@media (max-height: 500px) and (orientation: landscape) {
+  .project-detail-panel {
+    max-height: 90vh;
+  }
+}
+
+/* ══════════════════════════════════════ */
+/* ══  SAFE AREA (notch / home bar)   ══ */
+/* ══════════════════════════════════════ */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .project-detail-panel {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
