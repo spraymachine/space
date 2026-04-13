@@ -1,0 +1,164 @@
+- generic [ref=e3]:
+  - navigation "Main navigation" [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: Mani Dodla
+      - list [ref=e7]:
+        - listitem [ref=e8]:
+          - link "Navigate to Home section" [ref=e9] [cursor=pointer]:
+            - /url: "#home"
+            - text: Home
+        - listitem [ref=e10]:
+          - link "Navigate to About Me section" [ref=e11] [cursor=pointer]:
+            - /url: "#about"
+            - text: About
+        - listitem [ref=e12]:
+          - link "Navigate to My Work section" [ref=e13] [cursor=pointer]:
+            - /url: "#work"
+            - text: Work
+        - listitem [ref=e14]:
+          - link "Navigate to Contact Me section" [ref=e15] [cursor=pointer]:
+            - /url: "#contact"
+            - text: Contact Me
+  - region "Hero section - Mani Dodla Web Developer" [ref=e16]:
+    - generic [ref=e17]:
+      - heading "Hi, I'm Mani Dodla" [level=1] [ref=e18]
+      - heading "|" [level=2] [ref=e19]:
+        - generic [ref=e21]: "|"
+      - generic:
+        - img [ref=e22] [cursor=pointer]
+        - img [ref=e24] [cursor=pointer]
+  - region "About Mani Dodla - Web Developer" [ref=e26]:
+    - heading "About Me" [level=2] [ref=e27]
+    - generic [ref=e28]:
+      - generic [ref=e29]:
+        - img "Mani Dodla - Web Developer in Vizag, India" [ref=e32]
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - generic [ref=e36]: 7+
+            - generic [ref=e37]: Projects Delivered
+          - generic [ref=e38]:
+            - generic [ref=e39]: 100%
+            - generic [ref=e40]: Client Satisfaction
+          - generic [ref=e41]:
+            - generic [ref=e42]: 3+
+            - generic [ref=e43]: Years Experience
+      - generic [ref=e45]:
+        - paragraph [ref=e46]: Hello! I'm Mani Dodla , a passionate web developer and designer based in Visakhapatnam (Vizag), India .
+        - paragraph [ref=e47]: I transform ideas into reality through code, creating beautiful and functional digital experiences with a keen eye for detail and a commitment to excellence.
+        - paragraph [ref=e48]: As a professional web developer in Vizag , I specialize in creating modern, responsive websites and web applications using React, JavaScript, and cutting-edge technologies that not only look great but also deliver exceptional user experiences.
+        - paragraph [ref=e49]: Whether you're looking for a freelance web developer in India or need custom web solutions for your business, I'm here to help bring your vision to life.
+      - generic [ref=e50]:
+        - heading "Skills & Technologies" [level=3] [ref=e51]:
+          - generic [ref=e52]: Skills & Technologies
+        - generic [ref=e54]:
+          - generic [ref=e55]:
+            - heading "Frontend" [level=4] [ref=e56]
+            - generic [ref=e57]:
+              - generic [ref=e58]: React
+              - generic [ref=e59]: JavaScript
+              - generic [ref=e60]: HTML/CSS
+              - generic [ref=e61]: Responsive Design
+          - generic [ref=e62]:
+            - heading "Backend" [level=4] [ref=e63]
+            - generic [ref=e64]:
+              - generic [ref=e65]: Java
+              - generic [ref=e66]: Python
+          - generic [ref=e67]:
+            - heading "Design & Tools" [level=4] [ref=e68]
+            - generic [ref=e69]:
+              - generic [ref=e70]: UI/UX
+              - generic [ref=e71]: Wix
+              - generic [ref=e72]: Webflow
+          - generic [ref=e73]:
+            - heading "Development" [level=4] [ref=e74]
+            - generic [ref=e75]:
+              - generic [ref=e76]: Git
+              - generic [ref=e77]: GitHub
+              - generic [ref=e78]: Terminal
+              - generic [ref=e79]: Documentation
+          - generic [ref=e80]:
+            - heading "Cloud" [level=4] [ref=e81]
+            - generic [ref=e82]:
+              - generic [ref=e83]: AWS
+              - generic [ref=e84]: Azure
+              - generic [ref=e85]: Requirement Gathering
+  - region "Portfolio and work showcase" [ref=e86]:
+    - heading "My Work" [level=2] [ref=e87]
+    - generic [ref=e88]:
+      - button "Previous project" [ref=e89] [cursor=pointer]: ←
+      - generic [ref=e90]:
+        - button "Go to project 1" [ref=e91] [cursor=pointer]
+        - button "Go to project 2" [ref=e92] [cursor=pointer]
+        - button "Go to project 3" [ref=e93] [cursor=pointer]
+        - button "Go to project 4" [ref=e94] [cursor=pointer]
+        - button "Go to project 5" [ref=e95] [cursor=pointer]
+        - button "Go to project 6" [ref=e96] [cursor=pointer]
+        - button "Go to project 7" [ref=e97] [cursor=pointer]
+      - button "Next project" [ref=e98] [cursor=pointer]: →
+    - generic [ref=e99]:
+      - generic [ref=e102]:
+        - generic [ref=e103]: Services
+        - heading "Safe Hands" [level=3] [ref=e104]
+        - paragraph [ref=e105]: A compassionate platform dedicated to safety and support services, with intuitive navigation and accessible design.
+        - link "View Project →" [ref=e106] [cursor=pointer]:
+          - /url: https://www.safehands.live
+      - generic [ref=e109]:
+        - generic [ref=e110]: Portfolio
+        - heading "Akiri Sridhar Portfolio" [level=3] [ref=e111]
+        - paragraph [ref=e112]: Elegant personal portfolio website with sophisticated design elements and smooth user experience.
+        - link "View Project →" [ref=e113] [cursor=pointer]:
+          - /url: https://akirisridhar.com
+      - generic [ref=e116]:
+        - generic [ref=e117]: Business
+        - heading "Krishi Engineers" [level=3] [ref=e118]
+        - paragraph [ref=e119]: Professional business website showcasing engineering solutions with a clean, corporate design and comprehensive service information.
+        - link "View Project →" [ref=e120] [cursor=pointer]:
+          - /url: https://www.krishiengineers.in
+      - generic [ref=e123]:
+        - generic [ref=e124]: E-commerce
+        - heading "Viren Jewellery" [level=3] [ref=e125]
+        - paragraph [ref=e126]: Luxurious e-commerce website for jewelry brand, featuring stunning product displays and seamless shopping experience.
+        - link "View Project →" [ref=e127] [cursor=pointer]:
+          - /url: https://mani-dodla.wixstudio.com/viren-jewellery
+      - generic [ref=e130]:
+        - generic [ref=e131]: Tech
+        - heading "CodeFall Tech Hub" [level=3] [ref=e132]
+        - paragraph [ref=e133]: Modern tech hub platform showcasing innovative solutions and technologies with cutting-edge design.
+        - link "View Project →" [ref=e134] [cursor=pointer]:
+          - /url: https://codefall-tech-hub.lovable.app
+      - generic [ref=e137]:
+        - generic [ref=e138]: Web App
+        - heading "BNBB Platform" [level=3] [ref=e139]
+        - paragraph [ref=e140]: Dynamic web application with rich features and interactive elements, delivering exceptional user engagement.
+        - link "View Project →" [ref=e141] [cursor=pointer]:
+          - /url: https://mani-dodla.wixsite.com/bnbb
+      - generic [ref=e144]:
+        - generic [ref=e145]: Gaming
+        - heading "Scratch Wrath" [level=3] [ref=e146]
+        - paragraph [ref=e147]: An engaging gaming platform built with modern web technologies, featuring interactive gameplay and smooth animations.
+        - link "View Project →" [ref=e148] [cursor=pointer]:
+          - /url: https://manik5621.wixsite.com/scratch-wrath
+  - region "Contact Mani Dodla" [ref=e149]:
+    - generic [ref=e150]:
+      - heading "Let's Connect" [level=2] [ref=e151]
+      - paragraph [ref=e152]: Looking for a web developer in Vizag? Have a project in mind or just want to chat? I'd love to hear from you and help bring your ideas to life!
+      - generic [ref=e153]:
+        - generic [ref=e154]:
+          - heading "Get in Touch with Mani Dodla" [level=3] [ref=e155]
+          - paragraph [ref=e156]: As a professional web developer based in Visakhapatnam, India, I'm always open to discussing new projects, creative ideas, web development opportunities, or collaborations. Let's build something amazing together!
+          - generic [ref=e157]:
+            - link "Visit Mani Dodla's GitHub profile" [ref=e158] [cursor=pointer]:
+              - /url: https://github.com
+              - img "GitHub icon" [ref=e159]
+            - link "Connect with Mani Dodla on LinkedIn" [ref=e161] [cursor=pointer]:
+              - /url: https://www.linkedin.com/in/mani-dodla/
+              - img "LinkedIn icon" [ref=e162]
+            - link "Send an email to Mani Dodla" [ref=e164] [cursor=pointer]:
+              - /url: mailto:manik5621@gmail.com
+              - img "Email icon" [ref=e165]
+        - generic [ref=e167]:
+          - textbox "Your Name" [ref=e169]
+          - textbox "Your Email" [ref=e171]
+          - textbox "Your Message" [ref=e173]
+          - button "Send Message" [ref=e174] [cursor=pointer]
+    - paragraph [ref=e176]: © 2025 Mani Dodla - Web Developer in Vizag, India. Built with passion and React.
