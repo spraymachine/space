@@ -20,7 +20,7 @@ export default function DiscoveryCounter({ discoveredCount, visible }) {
 
   return (
     <div
-      className="font-mono"
+      className="font-mono discovery-counter-mobile"
       style={{
         position: 'fixed',
         bottom: 'clamp(1rem, 3vh, 2rem)',
