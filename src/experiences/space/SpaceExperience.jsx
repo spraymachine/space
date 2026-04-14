@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, lazy, Suspense } from 'react';
+import { useEffect, useRef, useState, lazy, Suspense, useCallback } from 'react';
 import Lenis from '@studio-freight/lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,6 +11,9 @@ import SkillsSection from './sections/SkillsSection';
 import ProjectsSection from './sections/ProjectsSection';
 import TestimonialsSection from './sections/TestimonialsSection';
 import ContactSection from './sections/ContactSection';
+import DiscoveryCounter from './components/DiscoveryCounter';
+import InterestCard from './components/InterestCard';
+import { interests } from './data/interests';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,6 +29,29 @@ export default function SpaceExperience({ navigate }) {
   // Shared orbit state between ProjectsSection (DOM) and CameraRig (3D)
   const orbitAngleRef = useRef(0);
   const [isOrbiting, setIsOrbiting] = useState(false);
+
+  // Discovery state — persisted to localStorage
+  const [discoveredIds, setDiscoveredIds] = useState(() => {
+    try {
+      const saved = localStorage.getItem('space-discovered-interests');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [activeInterest, setActiveInterest] = useState(null);
+
+  const handleDiscover = useCallback((id) => {
+    const interest = interests.find((i) => i.id === id);
+    if (!interest) return;
+    setActiveInterest(interest);
+    setDiscoveredIds((prev) => {
+      if (prev.includes(id)) return prev;
+      const next = [...prev, id];
+      try { localStorage.setItem('space-discovered-interests', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, []);
 
   // Skip Big Bang for reduced motion users
   useEffect(() => {
@@ -104,8 +130,24 @@ export default function SpaceExperience({ navigate }) {
           scrollProgressRef={scrollProgressRef}
           orbitAngleRef={orbitAngleRef}
           isOrbiting={isOrbiting}
+          discoveredIds={discoveredIds}
+          onDiscover={handleDiscover}
         />
       </Suspense>
+
+      {/* Discovery counter */}
+      <DiscoveryCounter
+        discoveredCount={discoveredIds.length}
+        visible={introComplete}
+      />
+
+      {/* Interest detail card */}
+      {activeInterest && (
+        <InterestCard
+          interest={activeInterest}
+          onDismiss={() => setActiveInterest(null)}
+        />
+      )}
 
       {/* Scrollable DOM content */}
       <div

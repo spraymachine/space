@@ -10,11 +10,12 @@ import Jupiter from './planets/Jupiter';
 import Saturn from './planets/Saturn';
 import Uranus from './planets/Uranus';
 import Neptune from './planets/Neptune';
+import InterestObjects from './InterestObjects';
 
 export { PLANET_POSITIONS } from './constants';
 import { PLANET_POSITIONS } from './constants';
 
-export default function SpaceCanvas({ gpuTier, scrollProgressRef, orbitAngleRef, isOrbiting }) {
+export default function SpaceCanvas({ gpuTier, scrollProgressRef, orbitAngleRef, isOrbiting, discoveredIds, onDiscover }) {
   const seg = gpuTier.planetDetail;
   const mobile = gpuTier.mobile;
 
@@ -56,6 +57,12 @@ export default function SpaceCanvas({ gpuTier, scrollProgressRef, orbitAngleRef,
         <Saturn position={PLANET_POSITIONS.saturn} segments={seg} />
         <Uranus position={PLANET_POSITIONS.uranus} segments={seg} />
         <Neptune position={PLANET_POSITIONS.neptune} segments={seg} />
+
+        <InterestObjects
+          discoveredIds={discoveredIds}
+          onDiscover={onDiscover}
+          gpuTier={gpuTier.tier}
+        />
 
         <CameraRig
           scrollProgressRef={scrollProgressRef}
