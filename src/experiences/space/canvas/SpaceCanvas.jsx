@@ -15,7 +15,7 @@ import InterestObjects from './InterestObjects';
 export { PLANET_POSITIONS } from './constants';
 import { PLANET_POSITIONS } from './constants';
 
-export default function SpaceCanvas({ gpuTier, scrollProgressRef, orbitAngleRef, isOrbiting, discoveredIds, onDiscover }) {
+export default function SpaceCanvas({ gpuTier, scrollProgressRef, orbitAngleRef, isOrbiting, discoveredIds, onDiscover, eventSource }) {
   const seg = gpuTier.planetDetail;
   const mobile = gpuTier.mobile;
 
@@ -39,6 +39,8 @@ export default function SpaceCanvas({ gpuTier, scrollProgressRef, orbitAngleRef,
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = 1.2;
       }}
+      eventSource={eventSource}
+      eventPrefix="client"
       gl={{
         antialias: !mobile && gpuTier.tier !== 'low',
         powerPreference: mobile ? 'low-power' : 'high-performance',

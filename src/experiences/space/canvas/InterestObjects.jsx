@@ -1,5 +1,5 @@
-import { useRef, useMemo, useState, useCallback } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useRef, useMemo, useState } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { interests } from '../data/interests';
 
@@ -137,12 +137,6 @@ function InterestSprite({ interest, discovered, onDiscover, onHover, hovered, gp
 
 export default function InterestObjects({ discoveredIds, onDiscover, gpuTier }) {
   const [hoveredId, setHoveredId] = useState(null);
-
-  // Enable pointer events on the canvas when this component mounts
-  const { gl } = useThree();
-  useMemo(() => {
-    gl.domElement.style.pointerEvents = 'auto';
-  }, [gl]);
 
   return (
     <group>

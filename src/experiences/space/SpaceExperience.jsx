@@ -95,8 +95,10 @@ export default function SpaceExperience({ navigate }) {
     }
   }, [introComplete]);
 
+  const containerRef = useRef(null);
+
   return (
-    <div style={{ position: 'relative' }}>
+    <div ref={containerRef} style={{ position: 'relative' }}>
       {/* Skip to content link */}
       <a
         href="#about"
@@ -132,6 +134,7 @@ export default function SpaceExperience({ navigate }) {
           isOrbiting={isOrbiting}
           discoveredIds={discoveredIds}
           onDiscover={handleDiscover}
+          eventSource={containerRef}
         />
       </Suspense>
 
