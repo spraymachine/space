@@ -36,8 +36,9 @@ export const interests = [
     emoji: '⚽',
     name: 'Football',
     description: 'District Level, 2019-2020',
-    position: [4, -0.5, -90],
+    position: [2, -0.5, -121],   // behind Saturn — only visible after orbiting ~120°
     color: '#4B9CD3',
+    scaleMultiplier: 0.6,        // smaller, harder to spot
   },
   {
     id: 'swimming',

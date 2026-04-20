@@ -51,7 +51,7 @@ function InterestSprite({ interest, discovered, onDiscover, onHover, hovered, gp
     [interest.color, discovered]
   );
 
-  const baseScale = mobile ? 1.2 : 0.9;
+  const baseScale = (mobile ? 1.2 : 0.9) * (interest.scaleMultiplier ?? 1);
   const bobAmplitude = mobile ? 0.15 : 0.3;
 
   useFrame(({ clock }) => {
