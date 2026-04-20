@@ -15,6 +15,9 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
   const hintRef = useRef();
   const isDragging = useRef(false);
   const lastX = useRef(0);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const touchDirectionLocked = useRef(null); // 'horizontal' | 'vertical' | null
   const panelRef = useRef();
   const panelTouchStart = useRef(null);
 
@@ -111,21 +114,25 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
   }, [hasEntered]);
 
   // Drag handlers
-  const handleDragStart = useCallback((clientX) => {
+  const handleDragStart = useCallback((clientX, clientY = 0) => {
     if (!isOrbiting || selectedProject) return;
     isDragging.current = true;
     lastX.current = clientX;
+    touchStartX.current = clientX;
+    touchStartY.current = clientY;
+    touchDirectionLocked.current = null;
   }, [isOrbiting, selectedProject]);
 
   const handleDragMove = useCallback((clientX) => {
     if (!isDragging.current) return;
-    const delta = (clientX - lastX.current) * (isMobile ? 0.008 : 0.005);
+    const delta = (clientX - lastX.current) * (isMobile ? 0.005 : 0.005);
     lastX.current = clientX;
     setOrbitAngle(prev => prev + delta);
   }, [isMobile]);
 
   const handleDragEnd = useCallback(() => {
     isDragging.current = false;
+    touchDirectionLocked.current = null;
   }, []);
 
   useEffect(() => {
@@ -135,8 +142,28 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
     const onMouseDown = (e) => handleDragStart(e.clientX);
     const onMouseMove = (e) => handleDragMove(e.clientX);
     const onMouseUp = () => handleDragEnd();
-    const onTouchStart = (e) => handleDragStart(e.touches[0].clientX);
-    const onTouchMove = (e) => { e.preventDefault(); handleDragMove(e.touches[0].clientX); };
+
+    const onTouchStart = (e) => {
+      handleDragStart(e.touches[0].clientX, e.touches[0].clientY);
+    };
+
+    const onTouchMove = (e) => {
+      if (!isDragging.current) return;
+      const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
+      const dy = Math.abs(e.touches[0].clientY - touchStartY.current);
+
+      // Lock direction on first meaningful movement
+      if (!touchDirectionLocked.current && (dx > 6 || dy > 6)) {
+        touchDirectionLocked.current = dx > dy ? 'horizontal' : 'vertical';
+      }
+
+      if (touchDirectionLocked.current === 'horizontal') {
+        e.preventDefault(); // only block scroll for horizontal drags
+        handleDragMove(e.touches[0].clientX);
+      }
+      // vertical: do nothing, let scroll pass through
+    };
+
     const onTouchEnd = () => handleDragEnd();
 
     el.addEventListener('mousedown', onMouseDown);
@@ -315,6 +342,39 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
               {isMobile ? 'Swipe to explore · Tap a project' : 'Drag to explore · Click a project'}
             </p>
           </div>
+        )}
+
+        {/* Mobile: "Continue" exit CTA — only on mobile, always visible when orbiting */}
+        {isMobile && isOrbiting && !selectedProject && (
+          <button
+            onClick={() => window.scrollBy({ top: window.innerHeight * 2.5, behavior: 'smooth' })}
+            className="font-mono"
+            style={{
+              position: 'absolute',
+              top: 'clamp(0.75rem, 2vh, 1.25rem)',
+              right: 'clamp(0.75rem, 4vw, 1.25rem)',
+              zIndex: 25,
+              background: 'rgba(255,255,255,0.06)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(234,214,166,0.2)',
+              borderRadius: '20px',
+              padding: '6px 14px',
+              color: 'var(--saturn-gold)',
+              fontSize: '0.6rem',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              animation: 'fadeIn 0.5s ease-out',
+              pointerEvents: 'auto',
+            }}
+            aria-label="Continue scrolling past Saturn"
+          >
+            Continue ↓
+          </button>
         )}
 
         {/* Project nodes */}
