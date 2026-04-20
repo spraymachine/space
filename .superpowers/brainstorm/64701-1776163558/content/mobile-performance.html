@@ -1,0 +1,69 @@
+<h2>Design: Floating Interest Objects</h2>
+<p class="subtitle">Section 4 of 4 — Mobile & Performance</p>
+
+<div class="section">
+  <h3>Mobile Behavior</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+    <div style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <div style="color: #FFD700; margin-bottom: 8px;">Interaction</div>
+      <ul style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.8; margin: 0;">
+        <li>No hover state on mobile — tap to discover directly</li>
+        <li>Interest card appears as bottom sheet (same pattern as Saturn project cards)</li>
+        <li>Swipe down or tap outside to dismiss</li>
+        <li>Discovery counter moves to top-right to avoid thumb zone conflict</li>
+      </ul>
+    </div>
+    <div style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <div style="color: #FFD700; margin-bottom: 8px;">Visibility</div>
+      <ul style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.8; margin: 0;">
+        <li>Objects slightly larger on mobile (easier tap targets)</li>
+        <li>Positioned closer to center of camera path (smaller viewport)</li>
+        <li>Glow aura slightly brighter so they stand out on small screens</li>
+        <li>Reduce bob amplitude so they don't drift off-screen</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>Performance Budget</h3>
+  <div style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+    <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; font-size: 13px; line-height: 2;">
+      <span style="color: #FFD700;">Sprites</span>
+      <span style="color: rgba(255,255,255,0.6);">9 quads — negligible draw calls (could batch into one if needed)</span>
+      <span style="color: #FFD700;">Textures</span>
+      <span style="color: rgba(255,255,255,0.6);">9 emoji textures generated via CanvasTexture at init — no network requests</span>
+      <span style="color: #FFD700;">Raycaster</span>
+      <span style="color: rgba(255,255,255,0.6);">Only fires on click/tap, not every frame — zero ongoing cost</span>
+      <span style="color: #FFD700;">Animations</span>
+      <span style="color: rgba(255,255,255,0.6);">Bob + rotation in useFrame — trivial sin/cos per sprite per frame</span>
+      <span style="color: #FFD700;">GPU tier scaling</span>
+      <span style="color: rgba(255,255,255,0.6);">Low-end devices: disable glow aura, reduce to static sprites</span>
+      <span style="color: #FFD700;">localStorage</span>
+      <span style="color: rgba(255,255,255,0.6);">Single JSON key for discovered array — read once on mount</span>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>Configurability (Future-Proofing)</h3>
+  <div style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+    <ul style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 2; margin: 0;">
+      <li><strong style="color: white;">interests.js</strong> — single data file is the only thing to edit. Each entry is:</li>
+    </ul>
+    <pre style="background: rgba(0,0,0,0.3); border-radius: 6px; padding: 12px; margin: 8px 0; font-size: 12px; color: rgba(255,255,255,0.7); overflow-x: auto;">{
+  id: "badminton",
+  emoji: "🏸",
+  name: "Badminton",
+  description: "District Level, Age 16",
+  position: [x, y, z],  // 3D coordinates
+  color: "#FFD700",      // accent color when discovered
+}</pre>
+    <ul style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 2; margin: 0;">
+      <li>Add a new interest → add one object to the array. That's it.</li>
+      <li>Remove one → delete the object. Counter auto-adjusts.</li>
+      <li>Reposition → change the [x, y, z] values.</li>
+      <li>Counter denominator derived from array length — never hardcoded.</li>
+    </ul>
+  </div>
+</div>

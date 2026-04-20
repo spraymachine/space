@@ -1,0 +1,65 @@
+<h2>Design: Floating Interest Objects</h2>
+<p class="subtitle">Section 1 of 4 — Architecture Overview</p>
+
+<div class="section">
+  <h3>How It All Fits Together</h3>
+  <div class="mockup">
+    <div class="mockup-header">System Architecture</div>
+    <div class="mockup-body" style="font-family: monospace; font-size: 13px; line-height: 1.8; padding: 24px;">
+      <div style="text-align: center; margin-bottom: 16px; color: #FFD700;">
+        ── Existing ──────────────────── New ──
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div>
+          <div style="border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 12px; margin-bottom: 8px;">
+            <div style="color: #4B9CD3;">SpaceCanvas.jsx</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">Existing Three.js canvas</div>
+          </div>
+          <div style="border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 12px; margin-bottom: 8px;">
+            <div style="color: #C88B3A;">CameraRig.jsx</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">Scroll-driven camera path</div>
+          </div>
+          <div style="border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 12px;">
+            <div style="color: #EAD6A6;">planets/*.jsx</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">Earth, Mars, Jupiter...</div>
+          </div>
+        </div>
+        <div>
+          <div style="border: 1px solid rgba(255,215,0,0.4); border-radius: 8px; padding: 12px; margin-bottom: 8px; background: rgba(255,215,0,0.05);">
+            <div style="color: #FFD700;">InterestObjects.jsx</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">9 Sprite meshes in 3D space</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">Glow + bob animation</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">Raycaster click detection</div>
+          </div>
+          <div style="border: 1px solid rgba(255,215,0,0.4); border-radius: 8px; padding: 12px; margin-bottom: 8px; background: rgba(255,215,0,0.05);">
+            <div style="color: #FFD700;">DiscoveryCounter.jsx</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">Fixed corner badge (DOM)</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">Glass-morphism pill</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">Pulse on new discovery</div>
+          </div>
+          <div style="border: 1px solid rgba(255,215,0,0.4); border-radius: 8px; padding: 12px; background: rgba(255,215,0,0.05);">
+            <div style="color: #FFD700;">InterestCard.jsx</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">Glass card popup (DOM)</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">Interest name + achievement</div>
+            <div style="color: rgba(255,255,255,0.5); font-size: 11px;">Click-to-dismiss</div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 16px; color: rgba(255,255,255,0.4); font-size: 11px;">
+        InterestObjects lives inside SpaceCanvas alongside planets<br>
+        DiscoveryCounter + InterestCard are DOM overlays in SpaceExperience
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px; padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+  <h3>Key Decisions</h3>
+  <ul style="line-height: 2; color: rgba(255,255,255,0.7);">
+    <li><strong>3 new files</strong> — InterestObjects (canvas), DiscoveryCounter (DOM), InterestCard (DOM)</li>
+    <li><strong>1 new data file</strong> — interests.js with all 9 items, positions, and descriptions</li>
+    <li><strong>State management</strong> — React context or lifted state in SpaceExperience for discovered items</li>
+    <li><strong>Persistence</strong> — localStorage saves which interests have been found across visits</li>
+    <li><strong>Performance</strong> — Sprites are GPU-cheap; no new post-processing; textures loaded once</li>
+  </ul>
+</div>

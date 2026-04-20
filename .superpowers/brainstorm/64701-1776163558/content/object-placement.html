@@ -1,0 +1,114 @@
+<h2>Design: Floating Interest Objects</h2>
+<p class="subtitle">Section 2 of 4 — Object Placement & Visuals</p>
+
+<div class="section">
+  <h3>Where Each Object Floats</h3>
+  <p class="subtitle">Objects are placed off to the sides of the camera path, so you spot them in peripheral vision as you scroll. They shouldn't block planets or section content.</p>
+  <div class="mockup">
+    <div class="mockup-header">Scroll Journey — Side View</div>
+    <div class="mockup-body" style="font-family: monospace; font-size: 12px; padding: 24px; line-height: 2.2;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="color: #4B9CD3;">🌍 Earth (Hero)</span>
+        <span style="color: rgba(255,255,255,0.3);">─────</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding-left: 40px;">
+        <span style="color: rgba(255,215,0,0.7);">☕ Coffee</span>
+        <span style="color: rgba(255,255,255,0.2); font-size: 10px;">— drifting right of path</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="color: #C1440E;">🔴 Mars (About)</span>
+        <span style="color: rgba(255,255,255,0.3);">─────</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding-left: 40px;">
+        <span style="color: rgba(255,215,0,0.7);">🏸 Shuttlecock</span>
+        <span style="color: rgba(255,255,255,0.2); font-size: 10px;">— left of path</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding-left: 40px;">
+        <span style="color: rgba(255,215,0,0.7);">⛸️ Roller Skate</span>
+        <span style="color: rgba(255,255,255,0.2); font-size: 10px;">— right of path</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="color: #C88B3A;">🟠 Jupiter (Skills)</span>
+        <span style="color: rgba(255,255,255,0.3);">─────</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding-left: 40px;">
+        <span style="color: rgba(255,215,0,0.7);">🥁 Drum</span>
+        <span style="color: rgba(255,255,255,0.2); font-size: 10px;">— left of path</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding-left: 40px;">
+        <span style="color: rgba(255,215,0,0.7);">⚽ Football</span>
+        <span style="color: rgba(255,255,255,0.2); font-size: 10px;">— right of path</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="color: #EAD6A6;">🪐 Saturn (Projects)</span>
+        <span style="color: rgba(255,255,255,0.3);">─────</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding-left: 40px;">
+        <span style="color: rgba(255,215,0,0.7);">🏊 Swimmer</span>
+        <span style="color: rgba(255,255,255,0.2); font-size: 10px;">— left of path</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="color: #73C2BE;">🔵 Uranus (Testimonials)</span>
+        <span style="color: rgba(255,255,255,0.3);">─────</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding-left: 40px;">
+        <span style="color: rgba(255,215,0,0.7);">🏋️ Dumbbell</span>
+        <span style="color: rgba(255,255,255,0.2); font-size: 10px;">— right of path</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding-left: 40px;">
+        <span style="color: rgba(255,215,0,0.7);">🎧 Headphones</span>
+        <span style="color: rgba(255,255,255,0.2); font-size: 10px;">— left of path</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="color: #3D5FC4;">🔵 Neptune (Contact)</span>
+        <span style="color: rgba(255,255,255,0.3);">─────</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding-left: 40px;">
+        <span style="color: rgba(255,215,0,0.7);">📖 Book</span>
+        <span style="color: rgba(255,255,255,0.2); font-size: 10px;">— right of path</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>Sprite Visuals</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+    <div style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <div style="color: #FFD700; margin-bottom: 8px;">Idle State</div>
+      <ul style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.8;">
+        <li>Emoji rendered to canvas texture (crisp at any zoom)</li>
+        <li>Soft golden glow aura (additive blending)</li>
+        <li>Gentle vertical bob (sin wave, ~0.3 units)</li>
+        <li>Slow rotation on Y axis</li>
+        <li>Scale: small enough to feel like space debris, large enough to notice</li>
+      </ul>
+    </div>
+    <div style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <div style="color: #FFD700; margin-bottom: 8px;">Hover / Near State</div>
+      <ul style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.8;">
+        <li>Glow intensifies (brighter aura)</li>
+        <li>Scale up slightly (1.0 → 1.2)</li>
+        <li>Cursor changes to pointer</li>
+        <li>Subtle particle sparkle around object</li>
+      </ul>
+    </div>
+    <div style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <div style="color: #FFD700; margin-bottom: 8px;">Discovered State</div>
+      <ul style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.8;">
+        <li>Glow shifts from gold to the section's accent color</li>
+        <li>Stays visible but dimmer (already found)</li>
+        <li>Click still shows the card (re-readable)</li>
+      </ul>
+    </div>
+    <div style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px;">
+      <div style="color: #FFD700; margin-bottom: 8px;">Click → Discovery</div>
+      <ul style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.8;">
+        <li>Brief burst animation (particles fly outward)</li>
+        <li>Glass card appears in DOM overlay</li>
+        <li>Counter pulses and increments</li>
+        <li>Card shows: emoji + name + achievement line</li>
+      </ul>
+    </div>
+  </div>
+</div>

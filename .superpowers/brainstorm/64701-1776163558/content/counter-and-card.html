@@ -1,0 +1,102 @@
+<h2>Design: Floating Interest Objects</h2>
+<p class="subtitle">Section 3 of 4 — Discovery Counter & Interest Card</p>
+
+<div class="section">
+  <h3>Discovery Counter (Fixed Corner Badge)</h3>
+  <div class="split">
+    <div class="mockup">
+      <div class="mockup-header">Default State</div>
+      <div class="mockup-body" style="padding: 32px; display: flex; justify-content: flex-end;">
+        <div style="background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+          <span style="color: #FFD700;">✦</span>
+          <span style="color: rgba(255,255,255,0.7);">3 / 9</span>
+        </div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mockup-header">Just Discovered (pulse)</div>
+      <div class="mockup-body" style="padding: 32px; display: flex; justify-content: flex-end;">
+        <div style="background: rgba(255,215,0,0.12); backdrop-filter: blur(12px); border: 1px solid rgba(255,215,0,0.3); border-radius: 20px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; font-size: 13px; box-shadow: 0 0 20px rgba(255,215,0,0.15);">
+          <span style="color: #FFD700;">✦</span>
+          <span style="color: #FFD700; font-weight: 600;">4 / 9</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top: 12px; padding: 12px 16px; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;">
+    <ul style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.8; margin: 0;">
+      <li>Position: fixed bottom-right, above mobile nav area</li>
+      <li>Glass-morphism pill matching your existing GlassCard style</li>
+      <li>Pulse animation on discovery: border glows gold, number bumps up, fades back to subtle</li>
+      <li>Hidden during Big Bang intro, appears once scroll begins</li>
+      <li>Shows "✦ 9 / 9" with a special glow when all found</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 32px;">
+  <h3>Interest Card (Click Popup)</h3>
+  <div class="mockup">
+    <div class="mockup-header">Example: Badminton discovered</div>
+    <div class="mockup-body" style="padding: 32px; display: flex; justify-content: center;">
+      <div style="background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; max-width: 320px; text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 12px;">🏸</div>
+        <div style="color: #FFD700; font-family: monospace; font-size: 10px; letter-spacing: 2px; margin-bottom: 8px;">DISCOVERED</div>
+        <div style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 8px;">Badminton</div>
+        <div style="color: rgba(255,255,255,0.5); font-size: 13px; line-height: 1.6;">District Level — Age 16</div>
+        <div style="margin-top: 16px; color: rgba(255,255,255,0.25); font-size: 11px;">click anywhere to dismiss</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 16px;">
+    <h3>All 9 Cards Content</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 12px;">
+      <div style="border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; text-align: center;">
+        <div style="font-size: 24px;">🏸</div>
+        <div style="color: white; margin-top: 4px;">Badminton</div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 11px;">District Level, Age 16</div>
+      </div>
+      <div style="border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; text-align: center;">
+        <div style="font-size: 24px;">⛸️</div>
+        <div style="color: white; margin-top: 4px;">Roller Skating</div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 11px;">District Champ, Age 5-7</div>
+      </div>
+      <div style="border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; text-align: center;">
+        <div style="font-size: 24px;">⚽</div>
+        <div style="color: white; margin-top: 4px;">Football</div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 11px;">District Level, 2019-2020</div>
+      </div>
+      <div style="border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; text-align: center;">
+        <div style="font-size: 24px;">🏊</div>
+        <div style="color: white; margin-top: 4px;">Swimming</div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 11px;">District Level, Age 12</div>
+      </div>
+      <div style="border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; text-align: center;">
+        <div style="font-size: 24px;">🥁</div>
+        <div style="color: white; margin-top: 4px;">Percussion</div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 11px;">Snare, Tabla, Mridangam & more. Band Parade Lead</div>
+      </div>
+      <div style="border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; text-align: center;">
+        <div style="font-size: 24px;">🏋️</div>
+        <div style="color: white; margin-top: 4px;">Gym</div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 11px;">195kg Deadlift</div>
+      </div>
+      <div style="border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; text-align: center;">
+        <div style="font-size: 24px;">🎧</div>
+        <div style="color: white; margin-top: 4px;">Music</div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 11px;">Hip-hop, RnB, Trap & Telugu. Daily listener</div>
+      </div>
+      <div style="border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; text-align: center;">
+        <div style="font-size: 24px;">📖</div>
+        <div style="color: white; margin-top: 4px;">Reading</div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 11px;">Always got a book going</div>
+      </div>
+      <div style="border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; text-align: center;">
+        <div style="font-size: 24px;">☕</div>
+        <div style="color: white; margin-top: 4px;">Coffee</div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 11px;">Fueled by caffeine</div>
+      </div>
+    </div>
+  </div>
+</div>
