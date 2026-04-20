@@ -2,15 +2,18 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { about } from '../data/about';
 
-export default function HeroSection() {
+export default function HeroSection({ introComplete }) {
   const contentRef = useRef();
+  const animated = useRef(false);
 
   useEffect(() => {
-    const el = contentRef.current;
-    gsap.fromTo(el, { opacity: 0, y: 30 }, {
-      opacity: 1, y: 0, duration: 1.2, delay: 3.5, ease: 'power2.out',
-    });
-  }, []);
+    if (!introComplete || animated.current) return;
+    animated.current = true;
+    gsap.fromTo(contentRef.current,
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1.2, delay: 0.3, ease: 'power2.out' }
+    );
+  }, [introComplete]);
 
   return (
     <section

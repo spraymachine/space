@@ -163,7 +163,7 @@ export default function SpaceExperience({ navigate }) {
           transition: 'opacity 0.8s ease',
         }}
       >
-        <HeroSection />
+        <HeroSection introComplete={introComplete} />
         <AboutSection />
         <SkillsSection />
         <ProjectsSection
