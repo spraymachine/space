@@ -125,6 +125,29 @@ section {
   to   { transform: scaleX(1); transform-origin: left; }
 }
 
+/* ── Uranus testimonial ring — 3D auto-rotation ── */
+@keyframes testimonialRingSpin {
+  from { transform: rotateX(-10deg) rotateY(0deg); }
+  to   { transform: rotateX(-10deg) rotateY(360deg); }
+}
+
+/* ── Faint breathing for orbit plane glow ── */
+@keyframes orbitPlanePulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 0.85; }
+}
+
+/* ══════════════════════════════════════ */
+/* ══  CONTACT PILL FORM              ══ */
+/* ══════════════════════════════════════ */
+.contact-pill-desktop { display: block; }
+.contact-pill-mobile  { display: none;  }
+
+@media (max-width: 720px) {
+  .contact-pill-desktop { display: none;  }
+  .contact-pill-mobile  { display: block; }
+}
+
 /* ══════════════════════════════════════ */
 /* ══  TESTIMONIALS BENTO GRID        ══ */
 /* ══════════════════════════════════════ */

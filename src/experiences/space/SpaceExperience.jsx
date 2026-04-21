@@ -30,6 +30,19 @@ export default function SpaceExperience({ navigate }) {
   const orbitAngleRef = useRef(0);
   const [isOrbiting, setIsOrbiting] = useState(false);
 
+  // Testimonial orbit (cards attached to Uranus in 3D) — pause/resume state
+  const [isTestimonialPaused, setIsTestimonialPaused] = useState(() => {
+    try {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch {
+      return false;
+    }
+  });
+  const toggleTestimonialPause = useCallback(
+    () => setIsTestimonialPaused((p) => !p),
+    []
+  );
+
   // Discovery state — persisted to localStorage
   const [discoveredIds, setDiscoveredIds] = useState(() => {
     try {
@@ -132,6 +145,8 @@ export default function SpaceExperience({ navigate }) {
           scrollProgressRef={scrollProgressRef}
           orbitAngleRef={orbitAngleRef}
           isOrbiting={isOrbiting}
+          isTestimonialPaused={isTestimonialPaused}
+          onToggleTestimonialPause={toggleTestimonialPause}
           discoveredIds={discoveredIds}
           onDiscover={handleDiscover}
           eventSource={containerRef}
@@ -170,7 +185,10 @@ export default function SpaceExperience({ navigate }) {
           orbitAngleRef={orbitAngleRef}
           onOrbitStateChange={setIsOrbiting}
         />
-        <TestimonialsSection />
+        <TestimonialsSection
+          isPaused={isTestimonialPaused}
+          onTogglePause={toggleTestimonialPause}
+        />
         <ContactSection />
 
         {/* Footer void — "Back to Earth" */}

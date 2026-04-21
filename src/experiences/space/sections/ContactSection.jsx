@@ -6,50 +6,42 @@ import ContactForm from '../../../components/shared/ContactForm';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SOCIAL_ICONS = {
-  github: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-    </svg>
-  ),
-  linkedin: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect x="2" y="9" width="4" height="12" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  ),
-  twitter: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-    </svg>
-  ),
-  mail: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="4" width="20" height="16" rx="2" />
-      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-    </svg>
-  ),
-};
-
 export default function ContactSection() {
-  const sectionRef = useRef();
+  const sectionRef  = useRef();
+  const line1Ref    = useRef();
+  const line2Ref    = useRef();
+  const line3Ref    = useRef();
+  const metaRef     = useRef();
+  const stripRef    = useRef();
 
   useEffect(() => {
-    const rows = sectionRef.current.querySelectorAll('.contact-row');
-    gsap.fromTo(rows,
-      { opacity: 0, y: 28 },
-      {
-        opacity: 1, y: 0,
-        duration: 0.85,
-        stagger: 0.1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 65%',
-          toggleActions: 'play none none reverse',
-        },
-      }
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 58%',
+        toggleActions: 'play none none reverse',
+      },
+    });
+
+    // Staggered heading line reveals — slide up from clip
+    [line1Ref, line2Ref, line3Ref].forEach((ref, i) => {
+      tl.fromTo(ref.current,
+        { y: 60, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.85, ease: 'power4.out' },
+        i * 0.08
+      );
+    });
+
+    tl.fromTo(metaRef.current,
+      { opacity: 0, y: 16 },
+      { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
+      0.35
+    );
+
+    tl.fromTo(stripRef.current,
+      { opacity: 0, y: 32 },
+      { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' },
+      0.5
     );
   }, []);
 
@@ -60,133 +52,170 @@ export default function ContactSection() {
       style={{
         minHeight: '100vh',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 'clamp(5rem, 10vw, 10rem) clamp(1.5rem, 6vw, 4rem)',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: 'clamp(4rem, 9vw, 7rem) clamp(2rem, 7vw, 6rem) clamp(3rem, 6vw, 5rem)',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
-      <div style={{ maxWidth: '640px', width: '100%' }}>
+      {/* ── Decorative orbit ring (SVG arc, top-right) ── */}
+      <svg
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: '-10%',
+          right: '-12%',
+          width: 'clamp(340px, 48vw, 680px)',
+          height: 'clamp(340px, 48vw, 680px)',
+          pointerEvents: 'none',
+          opacity: 0.07,
+        }}
+        viewBox="0 0 680 680"
+        fill="none"
+      >
+        <circle cx="340" cy="340" r="330" stroke="var(--neptune-blue)" strokeWidth="1.5" />
+        <circle cx="340" cy="340" r="260" stroke="var(--neptune-blue)" strokeWidth="0.75" strokeDasharray="4 12" />
+      </svg>
 
-        {/* ── Header block ── */}
-        <div className="contact-row" style={{ opacity: 0, marginBottom: 'clamp(3rem, 6vw, 5rem)' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.6rem',
-            marginBottom: '1.25rem',
-          }}>
-            <span style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.55rem',
-              letterSpacing: '0.28em',
-              color: 'var(--neptune-blue)',
-              textTransform: 'uppercase',
-              opacity: 0.75,
-            }}>
-              Neptune / Contact
-            </span>
-          </div>
+      {/* ── TOP: billboard heading block ── */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
 
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(2.8rem, 7vw, 5rem)',
-            fontWeight: 800,
-            letterSpacing: '-0.03em',
-            lineHeight: 1.0,
-            color: 'var(--star-white)',
-            marginBottom: '1.25rem',
-          }}>
-            Let's talk.
-          </h2>
-
-          <p style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: 'clamp(0.85rem, 1.3vw, 1rem)',
-            color: 'rgba(232,244,248,0.45)',
-            lineHeight: 1.75,
-            maxWidth: '48ch',
-          }}>
-            Open to collabs, full-time roles, or just a good conversation.
-            Drop a message — I read every one.
-          </p>
-        </div>
-
-        {/* ── Form ── */}
-        <div className="contact-row" style={{ opacity: 0, marginBottom: 'clamp(3rem, 6vw, 5rem)' }}>
-          <ContactForm />
-        </div>
-
-        {/* ── Footer row: socials + resume ── */}
-        <div className="contact-row" style={{
-          opacity: 0,
+        {/* Eyebrow */}
+        <div style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          paddingTop: '1.5rem',
-          borderTop: '1px solid rgba(255,255,255,0.07)',
+          gap: '0.5rem',
+          marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)',
         }}>
+          <span style={{
+            width: '6px', height: '6px', borderRadius: '50%',
+            background: 'var(--neptune-blue)',
+            boxShadow: '0 0 8px var(--neptune-blue)',
+            flexShrink: 0,
+          }} />
+          <span style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.55rem',
+            letterSpacing: '0.26em',
+            textTransform: 'uppercase',
+            color: 'var(--neptune-blue)',
+            opacity: 0.8,
+          }}>
+            Neptune / Contact
+          </span>
+        </div>
 
-          {/* Social icons */}
-          <div style={{ display: 'flex', gap: '0.25rem' }}>
+        {/* Heading — line-by-line reveals */}
+        <h2 style={{ margin: 0, padding: 0 }}>
+          {[["Let's build", line1Ref], ["something", line2Ref], ["great.", line3Ref]].map(([text, ref]) => (
+            <div key={text} style={{ overflow: 'hidden', lineHeight: 1 }}>
+              <span
+                ref={ref}
+                style={{
+                  display: 'block',
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(3.5rem, 10vw, 8.5rem)',
+                  fontWeight: 800,
+                  letterSpacing: '-0.04em',
+                  color: 'var(--star-white)',
+                  lineHeight: 1.05,
+                  opacity: 0,
+                }}
+              >
+                {text}
+              </span>
+            </div>
+          ))}
+        </h2>
+
+        {/* Meta row — copy + social links + availability */}
+        <div
+          ref={metaRef}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1.25rem',
+            marginTop: 'clamp(1.75rem, 3.5vw, 3rem)',
+            opacity: 0,
+          }}
+        >
+          <p style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 'clamp(0.82rem, 1.2vw, 0.95rem)',
+            color: 'rgba(232,244,248,0.4)',
+            lineHeight: 1.6,
+            maxWidth: '38ch',
+            margin: 0,
+          }}>
+            Open to roles, collabs, and ambitious projects.
+          </p>
+
+          {/* Divider */}
+          <div style={{ width: '1px', height: '28px', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+
+          {/* Social pills */}
+          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
             {about.socials.map((s) => (
               <a
                 key={s.platform}
                 href={s.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={s.platform}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '8px',
-                  color: 'rgba(232,244,248,0.35)',
+                  padding: '0.3rem 0.75rem',
+                  borderRadius: '100px',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'rgba(255,255,255,0.03)',
+                  color: 'rgba(232,244,248,0.45)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.55rem',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
                   textDecoration: 'none',
-                  transition: 'color 0.25s ease, background 0.25s ease',
+                  transition: 'all 0.4s cubic-bezier(0.32,0.72,0,1)',
                 }}
                 onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(61,95,196,0.45)';
                   e.currentTarget.style.color = 'var(--star-white)';
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+                  e.currentTarget.style.background = 'rgba(61,95,196,0.08)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'rgba(232,244,248,0.35)';
-                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                  e.currentTarget.style.color = 'rgba(232,244,248,0.45)';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
                 }}
               >
-                {SOCIAL_ICONS[s.icon]}
+                {s.platform}
               </a>
             ))}
           </div>
 
-          {/* Resume link */}
+          {/* Resume */}
           <a
             href={about.resumeUrl}
             download
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
               fontFamily: 'var(--font-mono)',
-              fontSize: '0.6rem',
-              fontWeight: 600,
-              letterSpacing: '0.12em',
+              fontSize: '0.55rem',
+              letterSpacing: '0.1em',
               textTransform: 'uppercase',
-              color: 'rgba(232,244,248,0.4)',
+              color: 'rgba(232,244,248,0.3)',
               textDecoration: 'none',
-              transition: 'color 0.25s ease',
+              transition: 'color 0.3s cubic-bezier(0.32,0.72,0,1)',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--star-white)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(232,244,248,0.4)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(232,244,248,0.3)'; }}
           >
-            <span>Resume</span>
-            <span style={{ fontSize: '0.75rem' }}>↓</span>
+            Résumé ↓
           </a>
         </div>
+      </div>
 
+      {/* ── BOTTOM: form strip ── */}
+      <div ref={stripRef} style={{ opacity: 0, paddingTop: 'clamp(2.5rem, 5vw, 4rem)' }}>
+        <ContactForm />
       </div>
     </section>
   );
