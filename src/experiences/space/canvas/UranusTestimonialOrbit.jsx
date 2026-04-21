@@ -49,7 +49,8 @@ const CARD_ACCENTS = [
   { hex: '#8BAEE8', rgb: '139,174,232' },   // Neptune blue  — technical
 ];
 
-const tmpVec = new THREE.Vector3();
+const tmpVec  = new THREE.Vector3();
+const tmpVec2 = new THREE.Vector3(); // reusable — Uranus world pos
 
 export default function UranusTestimonialOrbit({
   scrollProgressRef,
@@ -106,20 +107,51 @@ export default function UranusTestimonialOrbit({
       else sectionFade = 1;
     }
 
-    // Per-card depth fade using raw world-space distance from camera.
+    // Per-card visibility: hemisphere test + depth fade.
+    //
+    // Dot product of (Uranus→card) · (Uranus→camera) tells us which side the
+    // card is on.  cosAngle > 0 → camera-facing hemisphere, < 0 → behind.
+    // With 3 cards at 120° apart, exactly 1 is in the front hemisphere at any
+    // time; the other two (at ±120°, cos = −0.5) are behind and hidden.
+    // A ±0.15 cosine blend zone (~17°) smooths the edge of visibility.
     const camPos = state.camera.position;
     const { depthMin, depthRange } = cfg;
+
+    // Uranus world position (constant, but read per-frame for correctness)
+    tmpVec2.set(uranus[0], uranus[1], uranus[2]);
+    const camToUranusLen = tmpVec2.distanceTo(camPos); // ≈ distance camera→Uranus
+
     for (let i = 0; i < slotRefs.current.length; i++) {
       const slot = slotRefs.current[i];
       const dom = cardDomRefs.current[i];
       if (!slot || !dom) continue;
 
-      slot.getWorldPosition(tmpVec);
+      slot.getWorldPosition(tmpVec); // card world position
+
+      // --- Hemisphere fade ---
+      // Vectors from Uranus to card and from Uranus to camera (unnormalised)
+      const ux = tmpVec.x  - uranus[0];
+      const uy = tmpVec.y  - uranus[1];
+      const uz = tmpVec.z  - uranus[2];
+      const cx = camPos.x  - uranus[0];
+      const cy = camPos.y  - uranus[1];
+      const cz = camPos.z  - uranus[2];
+      const dot = ux * cx + uy * cy + uz * cz;
+      const cardLen = Math.sqrt(ux * ux + uy * uy + uz * uz) || 1;
+      const cosAngle = dot / (cardLen * camToUranusLen); // −1 (back) … +1 (front)
+
+      // Smooth step across the ±0.15 blend zone around the equator
+      let hemiFade;
+      if (cosAngle >= 0.15)       hemiFade = 1;
+      else if (cosAngle <= -0.15) hemiFade = 0;
+      else                        hemiFade = (cosAngle + 0.15) / 0.30;
+
+      // --- Depth fade (distance from camera, for front-hemisphere cards) ---
       const dist = tmpVec.distanceTo(camPos);
       const t = Math.max(0, Math.min(1, (dist - depthMin) / depthRange));
-      const depthFade = 1 - t * 0.88; // front=1.0, back≈0.12
+      const depthFade = 1 - t * 0.55; // front≈1.0, side≈0.7 — gentler roll-off
 
-      const finalOpacity = sectionFade * depthFade;
+      const finalOpacity = sectionFade * hemiFade * depthFade;
       dom.style.opacity = String(finalOpacity);
       dom.style.pointerEvents = finalOpacity > 0.3 ? 'auto' : 'none';
     }
