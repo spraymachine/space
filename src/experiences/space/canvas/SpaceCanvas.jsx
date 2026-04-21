@@ -11,11 +11,22 @@ import Saturn from './planets/Saturn';
 import Uranus from './planets/Uranus';
 import Neptune from './planets/Neptune';
 import InterestObjects from './InterestObjects';
+import UranusTestimonialOrbit from './UranusTestimonialOrbit';
 
 export { PLANET_POSITIONS } from './constants';
 import { PLANET_POSITIONS } from './constants';
 
-export default function SpaceCanvas({ gpuTier, scrollProgressRef, orbitAngleRef, isOrbiting, discoveredIds, onDiscover, eventSource }) {
+export default function SpaceCanvas({
+  gpuTier,
+  scrollProgressRef,
+  orbitAngleRef,
+  isOrbiting,
+  isTestimonialPaused,
+  onToggleTestimonialPause,
+  discoveredIds,
+  onDiscover,
+  eventSource,
+}) {
   const seg = gpuTier.planetDetail;
   const mobile = gpuTier.mobile;
 
@@ -64,6 +75,12 @@ export default function SpaceCanvas({ gpuTier, scrollProgressRef, orbitAngleRef,
           discoveredIds={discoveredIds}
           onDiscover={onDiscover}
           gpuTier={gpuTier.tier}
+        />
+
+        <UranusTestimonialOrbit
+          scrollProgressRef={scrollProgressRef}
+          isPaused={isTestimonialPaused}
+          onTogglePause={onToggleTestimonialPause}
         />
 
         <CameraRig
