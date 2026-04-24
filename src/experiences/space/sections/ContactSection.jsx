@@ -6,6 +6,41 @@ import ContactForm from '../../../components/shared/ContactForm';
 
 gsap.registerPlugin(ScrollTrigger);
 
+function PhoneIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
+      <path
+        d="M5.5 4.75h3.2c.45 0 .84.31.94.75l.74 3.15c.08.35-.04.71-.31.95l-1.82 1.64a13.6 13.6 0 0 0 6.56 6.56l1.64-1.82c.24-.27.6-.39.95-.31l3.15.74c.44.1.75.49.75.94v3.2c0 .55-.43 1.01-.98.99C11.32 22.5 1.5 12.68 1.51 5.73c-.02-.55.44-.98.99-.98Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function MailIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none">
+      <path
+        d="M4.5 6.75h15c.69 0 1.25.56 1.25 1.25v8c0 .69-.56 1.25-1.25 1.25h-15c-.69 0-1.25-.56-1.25-1.25v-8c0-.69.56-1.25 1.25-1.25Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="m5.75 8.5 6.25 5 6.25-5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function ContactSection() {
   const sectionRef  = useRef();
   const line1Ref    = useRef();
@@ -129,7 +164,7 @@ export default function ContactSection() {
           ))}
         </h2>
 
-        {/* Meta row — copy + social links + availability */}
+        {/* Meta row — copy + contact icons + availability */}
         <div
           ref={metaRef}
           style={{
@@ -155,39 +190,58 @@ export default function ContactSection() {
           {/* Divider */}
           <div style={{ width: '1px', height: '28px', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
 
-          {/* Social pills */}
-          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-            {about.socials.map((s) => (
+          {/* Contact icons */}
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {[
+              {
+                href: 'tel:+918919760762',
+                label: 'Call Mani',
+                icon: <PhoneIcon />,
+                accent: 'rgba(115,194,190,0.9)',
+                glow: 'rgba(115,194,190,0.35)',
+              },
+              {
+                href: 'mailto:ceo@manidodla.in',
+                label: 'Email Mani',
+                icon: <MailIcon />,
+                accent: 'rgba(61,95,196,0.95)',
+                glow: 'rgba(61,95,196,0.38)',
+              },
+            ].map((item) => (
               <a
-                key={s.platform}
-                href={s.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                key={item.label}
+                href={item.href}
+                aria-label={item.label}
+                title={item.label}
                 style={{
-                  padding: '0.3rem 0.75rem',
-                  borderRadius: '100px',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  background: 'rgba(255,255,255,0.03)',
-                  color: 'rgba(232,244,248,0.45)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.55rem',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  border: `1px solid ${item.glow}`,
+                  background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), rgba(255,255,255,0.04) 55%, rgba(0,0,0,0.12) 100%)`,
+                  color: item.accent,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   textDecoration: 'none',
-                  transition: 'all 0.4s cubic-bezier(0.32,0.72,0,1)',
+                  boxShadow: `0 0 18px ${item.glow}, inset 0 1px 0 rgba(255,255,255,0.08)`,
+                  transition: 'transform 0.35s cubic-bezier(0.32,0.72,0,1), box-shadow 0.35s cubic-bezier(0.32,0.72,0,1), border-color 0.35s cubic-bezier(0.32,0.72,0,1)',
+                  flexShrink: 0,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(61,95,196,0.45)';
-                  e.currentTarget.style.color = 'var(--star-white)';
-                  e.currentTarget.style.background = 'rgba(61,95,196,0.08)';
+                  e.currentTarget.style.transform = 'translateY(-1px) scale(1.06)';
+                  e.currentTarget.style.boxShadow = `0 0 26px ${item.glow}, 0 0 42px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.12)`;
+                  e.currentTarget.style.borderColor = item.accent;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
-                  e.currentTarget.style.color = 'rgba(232,244,248,0.45)';
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.boxShadow = `0 0 18px ${item.glow}, inset 0 1px 0 rgba(255,255,255,0.08)`;
+                  e.currentTarget.style.borderColor = item.glow;
                 }}
               >
-                {s.platform}
+                <span style={{ width: '20px', height: '20px', display: 'block', filter: 'drop-shadow(0 0 8px currentColor)' }}>
+                  {item.icon}
+                </span>
               </a>
             ))}
           </div>
