@@ -1,17 +1,24 @@
 import { useState, useCallback } from 'react';
 
-function PillField({ name, type = 'text', placeholder, value, onChange, flex = '1 1 160px' }) {
-  const [focused, setFocused] = useState(false);
+function PillField({
+  name,
+  type = 'text',
+  placeholder,
+  value,
+  onChange,
+  flex = '1 1 160px',
+  style = {},
+  className = '',
+}) {
   return (
     <input
+      className={className}
       name={name}
       type={type}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
       required
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
       style={{
         flex,
         minWidth: 0,
@@ -25,6 +32,7 @@ function PillField({ name, type = 'text', placeholder, value, onChange, flex = '
         padding: '0 1.25rem',
         height: '100%',
         caretColor: 'var(--neptune-blue)',
+        ...style,
       }}
     />
   );
@@ -136,13 +144,31 @@ export default function ContactForm({ onSubmitSuccess }) {
               flex="0 1 220px"
             />
             <Divider />
-            <PillField
-              name="message"
-              placeholder="What are you building?"
-              value={form.message}
-              onChange={onChange}
-              flex="1 1 200px"
-            />
+            <div
+              style={{
+                flex: '1 1 240px',
+                alignSelf: 'stretch',
+                display: 'flex',
+                alignItems: 'center',
+                minWidth: 0,
+                background: 'linear-gradient(90deg, rgba(61,95,196,0.14), rgba(115,194,190,0.08))',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(115,194,190,0.08), 0 0 18px rgba(61,95,196,0.08)',
+              }}
+            >
+              <PillField
+                className="contact-message-input"
+                name="message"
+                placeholder="What are you building?"
+                value={form.message}
+                onChange={onChange}
+                flex="1 1 auto"
+                style={{
+                  paddingLeft: '1.4rem',
+                  paddingRight: '1.4rem',
+                  textShadow: '0 0 10px rgba(115,194,190,0.14)',
+                }}
+              />
+            </div>
 
             {/* Button-in-button CTA */}
             <div style={{ padding: '4px 4px 4px 8px', flexShrink: 0 }}>
@@ -221,33 +247,62 @@ export default function ContactForm({ onSubmitSuccess }) {
             overflow: 'hidden',
           }}>
             {[
-              { name: 'name',    type: 'text',  placeholder: 'Your name'             },
-              { name: 'email',   type: 'email', placeholder: 'your@email.com'         },
-              { name: 'message', type: 'text',  placeholder: 'What are you building?' },
+              { name: 'name', type: 'text', placeholder: 'Your name' },
+              { name: 'email', type: 'email', placeholder: 'your@email.com' },
+              { name: 'message', type: 'textarea', placeholder: 'What are you building?' },
             ].map((f, i) => (
               <div key={f.name}>
                 {i > 0 && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '0 1rem' }} />}
-                <input
-                  name={f.name}
-                  type={f.type}
-                  value={form[f.name]}
-                  onChange={onChange}
-                  placeholder={f.placeholder}
-                  required
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    color: 'var(--star-white)',
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.9rem',
-                    padding: '1rem 1.25rem',
-                    boxSizing: 'border-box',
-                    caretColor: 'var(--neptune-blue)',
-                  }}
-                />
+                {f.type === 'textarea' ? (
+                  <textarea
+                    name={f.name}
+                    value={form[f.name]}
+                    onChange={onChange}
+                    placeholder={f.placeholder}
+                    required
+                    rows={4}
+                    className="contact-message-textarea"
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      background: 'linear-gradient(180deg, rgba(61,95,196,0.12), rgba(115,194,190,0.05))',
+                  border: 'none',
+                  outline: 'none',
+                  color: 'var(--star-white)',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.9rem',
+                  padding: '1rem 1.25rem 1.1rem',
+                  boxSizing: 'border-box',
+                  caretColor: 'var(--neptune-blue)',
+                  minHeight: '132px',
+                  resize: 'vertical',
+                  boxShadow: 'inset 0 0 0 1px rgba(115,194,190,0.08), 0 0 18px rgba(61,95,196,0.08)',
+                }}
+              />
+                ) : (
+                  <input
+                    name={f.name}
+                    type={f.type}
+                    value={form[f.name]}
+                    onChange={onChange}
+                    placeholder={f.placeholder}
+                required
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  background: 'linear-gradient(180deg, rgba(61,95,196,0.08), rgba(115,194,190,0.04))',
+                  border: 'none',
+                  outline: 'none',
+                  color: 'var(--star-white)',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.9rem',
+                  padding: '1rem 1.25rem',
+                  boxSizing: 'border-box',
+                  caretColor: 'var(--neptune-blue)',
+                  boxShadow: 'inset 0 0 0 1px rgba(115,194,190,0.08), 0 0 18px rgba(61,95,196,0.08)',
+                }}
+              />
+                )}
               </div>
             ))}
           </div>

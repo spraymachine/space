@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { about } from '../data/about';
 import ContactForm from '../../../components/shared/ContactForm';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -246,24 +245,6 @@ export default function ContactSection() {
             ))}
           </div>
 
-          {/* Resume */}
-          <a
-            href={about.resumeUrl}
-            download
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.55rem',
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              color: 'rgba(232,244,248,0.3)',
-              textDecoration: 'none',
-              transition: 'color 0.3s cubic-bezier(0.32,0.72,0,1)',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--star-white)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(232,244,248,0.3)'; }}
-          >
-            Résumé ↓
-          </a>
         </div>
       </div>
 
