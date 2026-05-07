@@ -1,5 +1,20 @@
 import { useState, useCallback } from 'react';
 
+const CONTACT_EMAIL = 'ceo@manidodla.in';
+
+function buildMailtoHref({ name, email, message }) {
+  const subject = `Portfolio contact from ${name}`;
+  const body = [
+    message,
+    '',
+    '---',
+    `Name: ${name}`,
+    `Email: ${email}`,
+  ].join('\n');
+
+  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
 function PillField({
   name,
   type = 'text',
@@ -58,12 +73,12 @@ export default function ContactForm({ onSubmitSuccess }) {
   const onSubmit = useCallback((e) => {
     e.preventDefault();
     setStatus('sending');
-    setTimeout(() => {
-      setStatus('sent');
-      onSubmitSuccess?.();
-      setTimeout(() => setStatus('idle'), 4000);
-    }, 1200);
-  }, [onSubmitSuccess]);
+
+    window.location.href = buildMailtoHref(form);
+    setStatus('sent');
+    onSubmitSuccess?.();
+    setTimeout(() => setStatus('idle'), 4000);
+  }, [form, onSubmitSuccess]);
 
   const isSending = status === 'sending';
   const isSent    = status === 'sent';
@@ -95,7 +110,7 @@ export default function ContactForm({ onSubmitSuccess }) {
             textTransform: 'uppercase',
             color: 'var(--uranus-teal)',
           }}>
-            ✓ Message sent — I'll be in touch soon
+            ✓ Email opened — I'll be in touch soon
           </span>
         </div>
       </div>

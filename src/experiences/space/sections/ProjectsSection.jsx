@@ -121,20 +121,20 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
   // Drag handlers
   const handleDragStart = useCallback((clientX, clientY = 0) => {
     if (!isOrbiting || selectedProject) return;
-    markSaturnInteracted();
     isDragging.current = true;
     lastX.current = clientX;
     touchStartX.current = clientX;
     touchStartY.current = clientY;
     touchDirectionLocked.current = null;
-  }, [isOrbiting, selectedProject, markSaturnInteracted]);
+  }, [isOrbiting, selectedProject]);
 
   const handleDragMove = useCallback((clientX) => {
     if (!isDragging.current) return;
     const delta = (clientX - lastX.current) * (isMobile ? 0.005 : 0.005);
     lastX.current = clientX;
+    markSaturnInteracted();
     setOrbitAngle(prev => prev + delta);
-  }, [isMobile]);
+  }, [isMobile, markSaturnInteracted]);
 
   const handleDragEnd = useCallback(() => {
     isDragging.current = false;
@@ -158,9 +158,15 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
       const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
       const dy = Math.abs(e.touches[0].clientY - touchStartY.current);
 
-      // Lock direction on first meaningful movement
-      if (!touchDirectionLocked.current && (dx > 6 || dy > 6)) {
-        touchDirectionLocked.current = dx > dy ? 'horizontal' : 'vertical';
+      // Lock only when intent is clear. Vertical gestures belong to page scroll.
+      if (!touchDirectionLocked.current && (dx > 8 || dy > 8)) {
+        if (dx > dy * 1.2) {
+          touchDirectionLocked.current = 'horizontal';
+        } else if (dy > dx * 1.1) {
+          touchDirectionLocked.current = 'vertical';
+          isDragging.current = false;
+          return;
+        }
       }
 
       if (touchDirectionLocked.current === 'horizontal') {
@@ -171,6 +177,7 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
     };
 
     const onTouchEnd = () => handleDragEnd();
+    const onTouchCancel = () => handleDragEnd();
 
     el.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
@@ -178,6 +185,7 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
     el.addEventListener('touchstart', onTouchStart, { passive: false });
     el.addEventListener('touchmove', onTouchMove, { passive: false });
     el.addEventListener('touchend', onTouchEnd);
+    el.addEventListener('touchcancel', onTouchCancel);
 
     return () => {
       el.removeEventListener('mousedown', onMouseDown);
@@ -186,6 +194,7 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
       el.removeEventListener('touchstart', onTouchStart);
       el.removeEventListener('touchmove', onTouchMove);
       el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('touchcancel', onTouchCancel);
     };
   }, [isOrbiting, handleDragStart, handleDragMove, handleDragEnd]);
 
@@ -267,7 +276,7 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
           width: '100%',
           height: '100%',
           cursor: isOrbiting && !selectedProject ? 'grab' : 'default',
-          touchAction: 'none',
+          touchAction: isMobile ? 'pan-y' : 'none',
           opacity: contentOpacity,
           transition: 'opacity 0.15s ease-out',
           pointerEvents: contentOpacity < 0.1 ? 'none' : 'auto',
