@@ -72,22 +72,20 @@ export default function UranusTestimonialOrbit({
 
   // Create a portal target OUTSIDE the canvas's stacking context, so cards
   // render above the DOM scroll container (#space-scroll-container is z-index 2).
-  const portalRef = useRef(null);
-  const [portalReady, setPortalReady] = useState(false);
-
-  useEffect(() => {
+  const [portalElement] = useState(() => {
     const el = document.createElement('div');
     el.setAttribute('data-uranus-testimonials-portal', '');
     el.style.cssText =
       'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:3;';
-    document.body.appendChild(el);
-    portalRef.current = el;
-    setPortalReady(true);
+    return el;
+  });
+
+  useEffect(() => {
+    document.body.appendChild(portalElement);
     return () => {
-      document.body.removeChild(el);
-      portalRef.current = null;
+      document.body.removeChild(portalElement);
     };
-  }, []);
+  }, [portalElement]);
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;
@@ -174,7 +172,7 @@ export default function UranusTestimonialOrbit({
 
       {/* Rotating orbit group — cards live here */}
       <group ref={groupRef} rotation={[TILT_X, 0, 0]}>
-        {portalReady && testimonials.map((t, i) => {
+        {portalElement && testimonials.map((t, i) => {
           const angle = (i / testimonials.length) * Math.PI * 2;
           const x = Math.sin(angle) * orbitRadius;
           const z = Math.cos(angle) * orbitRadius;
@@ -193,7 +191,7 @@ export default function UranusTestimonialOrbit({
                 center
                 distanceFactor={distanceFactor}
                 zIndexRange={[40, 0]}
-                portal={portalRef}
+                portal={{ current: portalElement }}
                 style={{
                   width: cardWidth,
                   transition: 'opacity 0.25s ease-out',

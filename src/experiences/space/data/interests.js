@@ -2,6 +2,7 @@ export const interests = [
   {
     id: 'coffee',
     emoji: '☕',
+    icon: `${import.meta.env.BASE_URL}coffee-glass.png`,
     name: 'Coffee',
     description: 'Fueled by caffeine',
     position: [5, 1, -15],
@@ -10,6 +11,7 @@ export const interests = [
   {
     id: 'badminton',
     emoji: '🏸',
+    icon: `${import.meta.env.BASE_URL}shuttlecock.png`,
     name: 'Badminton',
     description: 'District Level, Age 16',
     position: [-3, 0.5, -40],
@@ -51,6 +53,7 @@ export const interests = [
   {
     id: 'gym',
     emoji: '🏋️',
+    icon: `${import.meta.env.BASE_URL}gym.png`,
     name: 'Gym',
     description: '195kg Deadlift',
     position: [4, 0.5, -165],
@@ -59,6 +62,7 @@ export const interests = [
   {
     id: 'music',
     emoji: '🎧',
+    icon: `${import.meta.env.BASE_URL}music.png`,
     name: 'Music',
     description: 'Hip-hop, RnB, Trap & Telugu. Daily listener',
     position: [-4, -0.3, -172],
@@ -67,6 +71,7 @@ export const interests = [
   {
     id: 'reading',
     emoji: '📖',
+    icon: `${import.meta.env.BASE_URL}book.png`,
     name: 'Reading',
     description: 'Always got a book going',
     position: [3, 0.5, -200],

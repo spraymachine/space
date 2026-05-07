@@ -32,6 +32,20 @@ const WAYPOINTS = [
   { at: 0.88, pos: CAM.neptune, look: P.neptune },
 ];
 
+const SMALL_PHONE_CAM = {
+  ...CAM,
+  uranus: [P.uranus[0] - 0.25, P.uranus[1] + 1.05, P.uranus[2] + 5.5],
+};
+
+const SMALL_PHONE_WAYPOINTS = [
+  { at: 0.00, pos: CAM.earth,   look: P.earth },
+  { at: 0.13, pos: CAM.mars,    look: P.mars },
+  { at: 0.26, pos: CAM.jupiter, look: P.jupiter },
+  { at: 0.48, pos: CAM.saturn,  look: P.saturn },
+  { at: 0.72, pos: SMALL_PHONE_CAM.uranus, look: [P.uranus[0], P.uranus[1] + 0.15, P.uranus[2]] },
+  { at: 0.88, pos: CAM.neptune, look: P.neptune },
+];
+
 // Saturn orbit config
 const ORBIT_RADIUS = 8;
 const ORBIT_Y_OFFSET = 2;
@@ -43,17 +57,17 @@ function smootherstep(t) {
   return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
-function lerpWaypoints(progress) {
+function lerpWaypoints(progress, waypoints) {
   let i = 0;
-  while (i < WAYPOINTS.length - 1 && WAYPOINTS[i + 1].at <= progress) i++;
+  while (i < waypoints.length - 1 && waypoints[i + 1].at <= progress) i++;
 
-  if (i >= WAYPOINTS.length - 1) {
-    const last = WAYPOINTS[WAYPOINTS.length - 1];
+  if (i >= waypoints.length - 1) {
+    const last = waypoints[waypoints.length - 1];
     return { pos: [...last.pos], look: [...last.look] };
   }
 
-  const a = WAYPOINTS[i];
-  const b = WAYPOINTS[i + 1];
+  const a = waypoints[i];
+  const b = waypoints[i + 1];
   const range = b.at - a.at;
   const t = range > 0 ? smootherstep((progress - a.at) / range) : 0;
 
@@ -64,7 +78,7 @@ function lerpWaypoints(progress) {
 }
 
 export default function CameraRig({ scrollProgressRef, orbitAngleRef, isOrbiting }) {
-  const { camera } = useThree();
+  const { camera, size } = useThree();
   const lookAtTarget = useRef(new THREE.Vector3());
   const smoothAngle = useRef(0);
 
@@ -85,7 +99,8 @@ export default function CameraRig({ scrollProgressRef, orbitAngleRef, isOrbiting
       camera.position.lerp(new THREE.Vector3(orbitX, orbitY, orbitZ), 0.05);
       lookAtTarget.current.lerp(new THREE.Vector3(saturn[0], saturn[1], saturn[2]), 0.08);
     } else {
-      const { pos, look } = lerpWaypoints(progress);
+      const waypoints = size.width <= 480 ? SMALL_PHONE_WAYPOINTS : WAYPOINTS;
+      const { pos, look } = lerpWaypoints(progress, waypoints);
       camera.position.lerp(new THREE.Vector3(pos[0], pos[1], pos[2]), 0.06);
       lookAtTarget.current.lerp(new THREE.Vector3(look[0], look[1], look[2]), 0.06);
     }

@@ -87,6 +87,55 @@ section {
   50% { border-color: rgba(234, 214, 166, 0.6); transform: scale(1.1); }
 }
 
+@keyframes saturnGestureTouch {
+  0% {
+    opacity: 0;
+    transform: translate3d(-58px, 0, 0) scale(0.92);
+  }
+  14% {
+    opacity: 1;
+    transform: translate3d(-58px, 0, 0) scale(1);
+  }
+  48% {
+    opacity: 1;
+    transform: translate3d(58px, 0, 0) scale(1);
+  }
+  68% {
+    opacity: 0.6;
+    transform: translate3d(58px, 0, 0) scale(0.94);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-58px, 0, 0) scale(0.92);
+  }
+}
+
+@keyframes saturnGestureTrace {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scaleX(0.55);
+  }
+  42% {
+    opacity: 0.8;
+    transform: scaleX(1);
+  }
+  68% {
+    opacity: 0.35;
+    transform: scaleX(0.75);
+  }
+}
+
+@keyframes saturnGesturePulse {
+  0%, 100% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+}
+
 @keyframes slideInRight {
   from {
     opacity: 0;
@@ -143,9 +192,179 @@ section {
 .contact-pill-desktop { display: block; }
 .contact-pill-mobile  { display: none;  }
 
+.contact-message-input::placeholder,
+.contact-message-textarea::placeholder {
+  color: rgba(232, 244, 248, 0.44);
+}
+
+.contact-message-input:focus,
+.contact-message-textarea:focus {
+  background: rgba(61, 95, 196, 0.1);
+}
+
+.contact-section {
+  --contact-heading-size: clamp(3.5rem, 10vw, 8.5rem);
+  --contact-heading-tracking: -0.04em;
+}
+
+.saturn-gesture-overlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 24;
+  width: min(300px, 78vw);
+  height: 170px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  filter: drop-shadow(0 22px 38px rgba(0, 0, 0, 0.55));
+}
+
+.saturn-gesture-overlay::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 158px;
+  height: 158px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle, rgba(234, 214, 166, 0.18), rgba(234, 214, 166, 0.08) 48%, transparent 70%);
+  border: 1px solid rgba(234, 214, 166, 0.18);
+  animation: saturnGesturePulse 1.9s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.saturn-gesture-track {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 172px;
+  height: 2px;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  background: linear-gradient(90deg, transparent, rgba(234, 214, 166, 0.95), transparent);
+  box-shadow: 0 0 18px rgba(234, 214, 166, 0.55);
+  animation: saturnGestureTrace 1.9s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.saturn-gesture-track::before,
+.saturn-gesture-track::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-top: 1px solid rgba(234, 214, 166, 0.8);
+  border-right: 1px solid rgba(234, 214, 166, 0.8);
+}
+
+.saturn-gesture-track::before {
+  left: 4px;
+  transform: translateY(-50%) rotate(-135deg);
+}
+
+.saturn-gesture-track::after {
+  right: 4px;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.saturn-gesture-touch {
+  position: relative;
+  z-index: 2;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.96) 0 18%, rgba(232, 244, 248, 0.88) 19% 34%, rgba(234, 214, 166, 0.22) 35% 64%, transparent 65%);
+  border: 1px solid rgba(234, 214, 166, 0.38);
+  box-shadow:
+    0 0 0 8px rgba(234, 214, 166, 0.08),
+    0 0 26px rgba(234, 214, 166, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  animation: saturnGestureTouch 1.9s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  will-change: transform, opacity;
+}
+
+.saturn-gesture-touch::before,
+.saturn-gesture-touch::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.saturn-gesture-touch::before {
+  inset: 9px;
+  border: 1px solid rgba(12, 18, 24, 0.35);
+}
+
+.saturn-gesture-touch::after {
+  inset: -10px;
+  border: 1px solid rgba(234, 214, 166, 0.18);
+}
+
+.saturn-gesture-touch span {
+  width: 14px;
+  height: 26px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(12, 18, 24, 0.82), rgba(12, 18, 24, 0.52));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.saturn-gesture-overlay p {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(234, 214, 166, 0.24);
+  border-radius: 999px;
+  background: rgba(8, 10, 14, 0.56);
+  color: var(--saturn-gold);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
 @media (max-width: 720px) {
   .contact-pill-desktop { display: none;  }
   .contact-pill-mobile  { display: block; }
+
+  .contact-section {
+    --contact-heading-size: 2.85rem;
+    --contact-heading-tracking: -0.018em;
+  }
+}
+
+@media (max-width: 430px) {
+  .contact-section {
+    --contact-heading-size: 2.42rem;
+    --contact-heading-tracking: -0.012em;
+  }
+}
+
+@media (max-width: 390px) {
+  .contact-section {
+    --contact-heading-size: 2.32rem;
+    --contact-heading-tracking: 0;
+  }
+}
+
+@media (max-width: 340px) {
+  .contact-section {
+    --contact-heading-size: 2.12rem;
+    --contact-heading-tracking: 0;
+  }
 }
 
 /* ══════════════════════════════════════ */
@@ -263,6 +482,17 @@ section {
     bottom: auto !important;
     top: clamp(0.75rem, 2vh, 1.5rem) !important;
     right: clamp(0.75rem, 2vw, 1.5rem) !important;
+  }
+
+  .saturn-gesture-overlay {
+    top: 54%;
+    width: min(270px, 82vw);
+    height: 160px;
+  }
+
+  .saturn-gesture-touch {
+    width: 54px;
+    height: 54px;
   }
 }
 

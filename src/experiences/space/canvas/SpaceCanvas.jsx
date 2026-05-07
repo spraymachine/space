@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { Suspense } from 'react';
+import { Suspense, lazy, startTransition, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import Starfield from './Starfield';
 import SunGlow from './effects/SunGlow';
@@ -10,11 +10,12 @@ import Jupiter from './planets/Jupiter';
 import Saturn from './planets/Saturn';
 import Uranus from './planets/Uranus';
 import Neptune from './planets/Neptune';
-import InterestObjects from './InterestObjects';
-import UranusTestimonialOrbit from './UranusTestimonialOrbit';
 
 export { PLANET_POSITIONS } from './constants';
 import { PLANET_POSITIONS } from './constants';
+
+const InterestObjects = lazy(() => import('./InterestObjects'));
+const UranusTestimonialOrbit = lazy(() => import('./UranusTestimonialOrbit'));
 
 export default function SpaceCanvas({
   gpuTier,
@@ -29,6 +30,31 @@ export default function SpaceCanvas({
 }) {
   const seg = gpuTier.planetDetail;
   const mobile = gpuTier.mobile;
+  const [nonCriticalSceneReady, setNonCriticalSceneReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const reveal = () => {
+      if (cancelled) return;
+      startTransition(() => {
+        setNonCriticalSceneReady(true);
+      });
+    };
+
+    if ('requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(reveal, { timeout: 1200 });
+      return () => {
+        cancelled = true;
+        window.cancelIdleCallback(idleId);
+      };
+    }
+
+    const timeoutId = window.setTimeout(reveal, 350);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
 
   return (
     <Canvas
@@ -71,17 +97,21 @@ export default function SpaceCanvas({
         <Uranus position={PLANET_POSITIONS.uranus} segments={seg} />
         <Neptune position={PLANET_POSITIONS.neptune} segments={seg} />
 
-        <InterestObjects
-          discoveredIds={discoveredIds}
-          onDiscover={onDiscover}
-          gpuTier={gpuTier.tier}
-        />
+        {nonCriticalSceneReady && (
+          <InterestObjects
+            discoveredIds={discoveredIds}
+            onDiscover={onDiscover}
+            gpuTier={gpuTier.tier}
+          />
+        )}
 
-        <UranusTestimonialOrbit
-          scrollProgressRef={scrollProgressRef}
-          isPaused={isTestimonialPaused}
-          onTogglePause={onToggleTestimonialPause}
-        />
+        {nonCriticalSceneReady && (
+          <UranusTestimonialOrbit
+            scrollProgressRef={scrollProgressRef}
+            isPaused={isTestimonialPaused}
+            onTogglePause={onToggleTestimonialPause}
+          />
+        )}
 
         <CameraRig
           scrollProgressRef={scrollProgressRef}

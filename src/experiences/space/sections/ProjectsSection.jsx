@@ -26,9 +26,14 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
   const [selectedProject, setSelectedProject] = useState(null);
   const [hasEntered, setHasEntered] = useState(false);
   const [contentOpacity, setContentOpacity] = useState(0);
+  const [hasSaturnInteracted, setHasSaturnInteracted] = useState(false);
   const hasEnteredRef = useRef(false);
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+
+  const markSaturnInteracted = useCallback(() => {
+    setHasSaturnInteracted(true);
+  }, []);
 
   // Sync orbiting state up to parent
   useEffect(() => {
@@ -47,7 +52,7 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: 'top top',
-      end: '+=130%',
+      end: '+=80%',
       pin: true,
       onUpdate: (self) => {
         const p = self.progress;
@@ -77,7 +82,7 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
       },
     });
     return () => trigger.kill();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // Staggered entrance animation for project nodes
   useEffect(() => {
@@ -116,12 +121,13 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
   // Drag handlers
   const handleDragStart = useCallback((clientX, clientY = 0) => {
     if (!isOrbiting || selectedProject) return;
+    markSaturnInteracted();
     isDragging.current = true;
     lastX.current = clientX;
     touchStartX.current = clientX;
     touchStartY.current = clientY;
     touchDirectionLocked.current = null;
-  }, [isOrbiting, selectedProject]);
+  }, [isOrbiting, selectedProject, markSaturnInteracted]);
 
   const handleDragMove = useCallback((clientX) => {
     if (!isDragging.current) return;
@@ -344,10 +350,28 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
           </div>
         )}
 
+        {isOrbiting && !selectedProject && !hasSaturnInteracted && contentOpacity > 0.45 && (
+          <div
+            className="saturn-gesture-overlay"
+            aria-hidden="true"
+          >
+            <div className="saturn-gesture-track" />
+            <div className="saturn-gesture-touch">
+              <span />
+            </div>
+            <p className="font-mono">
+              Swipe Saturn
+            </p>
+          </div>
+        )}
+
         {/* Mobile: "Continue" exit CTA — only on mobile, always visible when orbiting */}
         {isMobile && isOrbiting && !selectedProject && (
           <button
-            onClick={() => window.scrollBy({ top: window.innerHeight * 2.5, behavior: 'smooth' })}
+            onClick={() => {
+              markSaturnInteracted();
+              window.scrollBy({ top: window.innerHeight * 1.15, behavior: 'smooth' });
+            }}
             className="font-mono"
             style={{
               position: 'absolute',
@@ -384,7 +408,11 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
             <button
               key={project.id}
               ref={(el) => (projectRefs.current[i] = el)}
-              onClick={() => !pos.isBehind && setSelectedProject(project)}
+              onClick={() => {
+                if (pos.isBehind) return;
+                markSaturnInteracted();
+                setSelectedProject(project);
+              }}
               aria-label={`View project: ${project.name}`}
               style={{
                 position: 'absolute',

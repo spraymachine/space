@@ -83,6 +83,7 @@ export default function ContactSection() {
     <section
       ref={sectionRef}
       id="contact"
+      className="contact-section"
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -149,9 +150,9 @@ export default function ContactSection() {
                 style={{
                   display: 'block',
                   fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(3.5rem, 10vw, 8.5rem)',
+                  fontSize: 'var(--contact-heading-size)',
                   fontWeight: 800,
-                  letterSpacing: '-0.04em',
+                  letterSpacing: 'var(--contact-heading-tracking)',
                   color: 'var(--star-white)',
                   lineHeight: 1.05,
                   opacity: 0,

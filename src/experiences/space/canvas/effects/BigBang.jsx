@@ -5,11 +5,10 @@ const DURATION = 3500;
 
 export default function BigBang({ onComplete }) {
   const canvasRef = useRef();
-  const [visible, setVisible] = useState(true);
+  const alreadyPlayed = typeof window !== 'undefined' && sessionStorage.getItem('bigBangPlayed') === 'true';
+  const [visible, setVisible] = useState(() => !alreadyPlayed);
   const [skipped, setSkipped] = useState(false);
   const [showSkip, setShowSkip] = useState(false);
-
-  const alreadyPlayed = sessionStorage.getItem('bigBangPlayed') === 'true';
 
   const finish = useCallback(() => {
     setVisible(false);
@@ -19,7 +18,7 @@ export default function BigBang({ onComplete }) {
 
   useEffect(() => {
     if (alreadyPlayed) {
-      finish();
+      onComplete?.();
       return;
     }
 
@@ -30,9 +29,10 @@ export default function BigBang({ onComplete }) {
     const ctx = canvas.getContext('2d');
 
     const resize = () => {
-      canvas.width = window.innerWidth * window.devicePixelRatio;
-      canvas.height = window.innerHeight * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
     window.addEventListener('resize', resize);
@@ -146,7 +146,7 @@ export default function BigBang({ onComplete }) {
       cancelAnimationFrame(animFrameId);
       window.removeEventListener('resize', resize);
     };
-  }, [alreadyPlayed, finish, skipped]);
+  }, [alreadyPlayed, finish, onComplete, skipped]);
 
   if (!visible) return null;
 

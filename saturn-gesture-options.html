@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Saturn Gesture Options</title>
+    <style>
+      :root {
+        --void: #000;
+        --star: #e8f4f8;
+        --muted: rgba(232, 244, 248, 0.56);
+        --dim: rgba(232, 244, 248, 0.24);
+        --saturn: #ead6a6;
+        --amber: #c88b3a;
+        --blue: #4b9cd3;
+        --teal: #73c2be;
+        --panel: rgba(8, 10, 14, 0.72);
+        --line: rgba(234, 214, 166, 0.22);
+        --font-display: Syne, Inter, ui-sans-serif, system-ui, sans-serif;
+        --font-body: Outfit, Inter, ui-sans-serif, system-ui, sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 25% 18%, rgba(234, 214, 166, 0.08), transparent 28%),
+          radial-gradient(circle at 78% 12%, rgba(75, 156, 211, 0.08), transparent 28%),
+          var(--void);
+        color: var(--star);
+        font-family: var(--font-body);
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          radial-gradient(circle, rgba(255, 255, 255, 0.4) 0 1px, transparent 1.5px),
+          radial-gradient(circle, rgba(234, 214, 166, 0.28) 0 1px, transparent 1.5px);
+        background-position: 0 0, 37px 53px;
+        background-size: 120px 140px, 170px 190px;
+        opacity: 0.5;
+      }
+
+      .page {
+        position: relative;
+        z-index: 1;
+        width: min(1180px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 42px 0 54px;
+      }
+
+      header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 24px;
+        align-items: end;
+        padding-bottom: 28px;
+      }
+
+      .eyebrow,
+      .tag {
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow {
+        color: var(--saturn);
+      }
+
+      h1 {
+        margin: 10px 0 0;
+        max-width: 760px;
+        font-family: var(--font-display);
+        font-size: clamp(2.2rem, 6vw, 5.4rem);
+        line-height: 0.92;
+        letter-spacing: 0;
+      }
+
+      .note {
+        max-width: 440px;
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+        font-size: 0.95rem;
+        text-align: right;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        position: relative;
+        min-height: 430px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+          var(--panel);
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 22px 64px rgba(0, 0, 0, 0.38);
+      }
+
+      .stage {
+        position: relative;
+        height: 310px;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background:
+          radial-gradient(circle at 64% 54%, rgba(234, 214, 166, 0.08), transparent 34%),
+          radial-gradient(circle at 24% 70%, rgba(115, 194, 190, 0.08), transparent 24%),
+          #020304;
+      }
+
+      .planet {
+        position: absolute;
+        left: 50%;
+        top: 52%;
+        width: 118px;
+        height: 118px;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background:
+          linear-gradient(95deg, transparent 45%, rgba(255, 255, 255, 0.18) 49%, transparent 54%),
+          radial-gradient(circle at 35% 26%, #f3ddb0, #b88d43 58%, #5c3a16);
+        box-shadow:
+          0 0 0 1px rgba(234, 214, 166, 0.35),
+          0 0 54px rgba(234, 214, 166, 0.18);
+      }
+
+      .planet::before,
+      .planet::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 220px;
+        height: 46px;
+        border: 6px solid rgba(234, 214, 166, 0.42);
+        border-left-color: rgba(234, 214, 166, 0.12);
+        border-right-color: rgba(234, 214, 166, 0.12);
+        border-radius: 50%;
+        transform: translate(-50%, -50%) rotate(-13deg);
+      }
+
+      .planet::after {
+        width: 250px;
+        height: 56px;
+        border-width: 1px;
+        opacity: 0.5;
+      }
+
+      .orbit {
+        position: absolute;
+        left: 50%;
+        top: 52%;
+        width: 260px;
+        height: 168px;
+        transform: translate(-50%, -50%);
+        border: 1px solid rgba(234, 214, 166, 0.12);
+        border-radius: 50%;
+      }
+
+      .node {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        box-shadow: 0 0 22px currentColor;
+      }
+
+      .node.one { left: 20%; top: 58%; color: var(--blue); background: var(--blue); }
+      .node.two { right: 18%; top: 38%; color: var(--saturn); background: var(--saturn); }
+      .node.three { left: 52%; bottom: 14%; color: var(--teal); background: var(--teal); }
+
+      .copy {
+        padding: 18px;
+      }
+
+      .tag {
+        color: var(--saturn);
+      }
+
+      h2 {
+        margin: 10px 0 8px;
+        font-family: var(--font-display);
+        font-size: 1.28rem;
+        letter-spacing: 0;
+      }
+
+      .copy p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+        font-size: 0.9rem;
+      }
+
+      .hint-label {
+        position: absolute;
+        left: 50%;
+        bottom: 48px;
+        transform: translateX(-50%);
+        padding: 0.45rem 0.72rem;
+        border: 1px solid rgba(234, 214, 166, 0.26);
+        border-radius: 999px;
+        background: rgba(8, 10, 14, 0.66);
+        color: var(--saturn);
+        font-family: var(--font-mono);
+        font-size: 0.54rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        backdrop-filter: blur(10px);
+      }
+
+      .rail {
+        position: absolute;
+        left: 50%;
+        top: 52%;
+        width: 172px;
+        height: 2px;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(90deg, transparent, rgba(234, 214, 166, 0.95), transparent);
+        box-shadow: 0 0 18px rgba(234, 214, 166, 0.55);
+      }
+
+      .rail::before,
+      .rail::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        border-top: 1px solid rgba(234, 214, 166, 0.8);
+        border-right: 1px solid rgba(234, 214, 166, 0.8);
+      }
+
+      .rail::before {
+        left: 4px;
+        transform: translateY(-50%) rotate(-135deg);
+      }
+
+      .rail::after {
+        right: 4px;
+        transform: translateY(-50%) rotate(45deg);
+      }
+
+      @keyframes moveWide {
+        0%, 100% { opacity: 0; transform: translate3d(-62px, 0, 0) scale(0.92); }
+        14%, 52% { opacity: 1; }
+        48% { transform: translate3d(62px, 0, 0) scale(1); }
+        70% { opacity: 0.45; transform: translate3d(62px, 0, 0) scale(0.94); }
+      }
+
+      @keyframes moveShort {
+        0%, 100% { opacity: 0; transform: translate3d(-42px, 0, 0); }
+        14%, 55% { opacity: 1; }
+        50% { transform: translate3d(42px, 0, 0); }
+      }
+
+      @keyframes sweepPath {
+        0%, 100% { opacity: 0.16; transform: translate(-50%, -50%) scaleX(0.46); }
+        42% { opacity: 0.9; transform: translate(-50%, -50%) scaleX(1); }
+      }
+
+      @keyframes orbitTurn {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+
+      @keyframes blink {
+        0%, 100% { opacity: 0.32; }
+        50% { opacity: 1; }
+      }
+
+      @keyframes arrowSlide {
+        0%, 100% { opacity: 0; transform: translateX(-32px); }
+        18%, 58% { opacity: 1; }
+        52% { transform: translateX(32px); }
+      }
+
+      .option-a .touch {
+        position: absolute;
+        left: calc(50% - 29px);
+        top: calc(52% - 29px);
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at center, rgba(255, 255, 255, 0.98) 0 16%, rgba(232, 244, 248, 0.84) 18% 34%, rgba(234, 214, 166, 0.2) 35% 62%, transparent 63%);
+        border: 1px solid rgba(234, 214, 166, 0.36);
+        box-shadow: 0 0 0 8px rgba(234, 214, 166, 0.08), 0 0 28px rgba(234, 214, 166, 0.52);
+        animation: moveWide 1.9s var(--ease) infinite;
+      }
+
+      .option-a .rail {
+        animation: sweepPath 1.9s var(--ease) infinite;
+      }
+
+      .option-b .orbital-handle {
+        position: absolute;
+        left: 50%;
+        top: 52%;
+        width: 254px;
+        height: 160px;
+        transform: translate(-50%, -50%);
+        animation: orbitTurn 4.2s linear infinite;
+      }
+
+      .option-b .orbital-handle span {
+        position: absolute;
+        left: calc(50% + 100px);
+        top: calc(50% - 12px);
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--saturn);
+        box-shadow: 0 0 0 9px rgba(234, 214, 166, 0.1), 0 0 30px rgba(234, 214, 166, 0.8);
+      }
+
+      .option-b .arc-copy {
+        position: absolute;
+        left: 50%;
+        bottom: 48px;
+        transform: translateX(-50%);
+        color: var(--saturn);
+        font-family: var(--font-mono);
+        font-size: 0.54rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .option-c .ghost-card {
+        position: absolute;
+        left: 50%;
+        top: 52%;
+        width: 92px;
+        height: 50px;
+        margin-left: -46px;
+        margin-top: -25px;
+        border: 1px solid rgba(234, 214, 166, 0.38);
+        border-radius: 8px;
+        background: rgba(234, 214, 166, 0.1);
+        box-shadow: 0 0 28px rgba(234, 214, 166, 0.22);
+        animation: moveWide 2.1s var(--ease) infinite;
+      }
+
+      .option-c .ghost-card::after {
+        content: "";
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        width: 18px;
+        height: 18px;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        background: var(--saturn);
+      }
+
+      .option-d .chevrons {
+        position: absolute;
+        left: 50%;
+        top: 52%;
+        display: flex;
+        gap: 18px;
+        transform: translate(-50%, -50%);
+      }
+
+      .option-d .chevrons span {
+        width: 26px;
+        height: 26px;
+        border-top: 2px solid rgba(234, 214, 166, 0.86);
+        border-right: 2px solid rgba(234, 214, 166, 0.86);
+        transform: rotate(45deg);
+        animation: blink 1.3s var(--ease) infinite;
+      }
+
+      .option-d .chevrons span:nth-child(2) { animation-delay: 0.14s; }
+      .option-d .chevrons span:nth-child(3) { animation-delay: 0.28s; }
+
+      .option-e .thumb-zone {
+        position: absolute;
+        left: 50%;
+        bottom: 72px;
+        width: 210px;
+        height: 72px;
+        transform: translateX(-50%);
+        border-radius: 999px;
+        border: 1px solid rgba(234, 214, 166, 0.2);
+        background: rgba(234, 214, 166, 0.045);
+      }
+
+      .option-e .thumb-zone::before {
+        content: "";
+        position: absolute;
+        left: 32px;
+        top: 50%;
+        width: 34px;
+        height: 34px;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        background: rgba(232, 244, 248, 0.92);
+        box-shadow: 0 0 0 8px rgba(234, 214, 166, 0.08), 0 0 28px rgba(234, 214, 166, 0.44);
+        animation: moveShort 1.75s var(--ease) infinite;
+      }
+
+      .option-f .direction-word {
+        position: absolute;
+        left: 50%;
+        top: 52%;
+        color: rgba(234, 214, 166, 0.92);
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        transform: translate(-50%, -50%);
+        animation: arrowSlide 1.65s var(--ease) infinite;
+      }
+
+      .option-f .direction-word::before,
+      .option-f .direction-word::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 34px;
+        height: 1px;
+        background: rgba(234, 214, 166, 0.6);
+      }
+
+      .option-f .direction-word::before { right: calc(100% + 14px); }
+      .option-f .direction-word::after { left: calc(100% + 14px); }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .controls a {
+        color: var(--star);
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        padding: 0.7rem 1rem;
+        background: rgba(255, 255, 255, 0.04);
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 900px) {
+        header {
+          grid-template-columns: 1fr;
+        }
+
+        .note {
+          text-align: left;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 430px) {
+        .page {
+          width: min(390px, calc(100vw - 22px));
+          padding-top: 24px;
+        }
+
+        .card {
+          min-height: 406px;
+        }
+
+        .stage {
+          height: 292px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <div>
+          <div class="eyebrow">Saturn overlay studies</div>
+          <h1>Swipe gesture options</h1>
+        </div>
+        <p class="note">
+          Pick the visual language first. These are preview-only concepts and do not change the live Saturn section.
+        </p>
+      </header>
+
+      <section class="grid" aria-label="Saturn gesture design options">
+        <article class="card option-a">
+          <div class="stage">
+            <div class="orbit"></div>
+            <div class="planet"></div>
+            <span class="node one"></span>
+            <span class="node two"></span>
+            <span class="node three"></span>
+            <div class="rail"></div>
+            <div class="touch"></div>
+            <div class="hint-label">Swipe Saturn</div>
+          </div>
+          <div class="copy">
+            <div class="tag">Option A</div>
+            <h2>Glowing Touch Point</h2>
+            <p>Cleanest replacement for the current overlay. Obvious touch motion without a literal hand.</p>
+          </div>
+        </article>
+
+        <article class="card option-b">
+          <div class="stage">
+            <div class="orbit"></div>
+            <div class="planet"></div>
+            <span class="node one"></span>
+            <span class="node two"></span>
+            <span class="node three"></span>
+            <div class="orbital-handle"><span></span></div>
+            <div class="arc-copy">Drag the orbit</div>
+          </div>
+          <div class="copy">
+            <div class="tag">Option B</div>
+            <h2>Orbit Handle</h2>
+            <p>Teaches that Saturn itself rotates. More atmospheric, less instructional.</p>
+          </div>
+        </article>
+
+        <article class="card option-c">
+          <div class="stage">
+            <div class="orbit"></div>
+            <div class="planet"></div>
+            <span class="node one"></span>
+            <span class="node two"></span>
+            <span class="node three"></span>
+            <div class="rail"></div>
+            <div class="ghost-card"></div>
+            <div class="hint-label">Drag projects</div>
+          </div>
+          <div class="copy">
+            <div class="tag">Option C</div>
+            <h2>Ghost Project Drag</h2>
+            <p>Shows an object moving, so users mimic the card rather than the finger.</p>
+          </div>
+        </article>
+
+        <article class="card option-d">
+          <div class="stage">
+            <div class="orbit"></div>
+            <div class="planet"></div>
+            <span class="node one"></span>
+            <span class="node two"></span>
+            <span class="node three"></span>
+            <div class="chevrons"><span></span><span></span><span></span></div>
+            <div class="hint-label">Swipe to explore</div>
+          </div>
+          <div class="copy">
+            <div class="tag">Option D</div>
+            <h2>Minimal Chevrons</h2>
+            <p>Lowest visual weight. Good if the overlay should stay quiet and premium.</p>
+          </div>
+        </article>
+
+        <article class="card option-e">
+          <div class="stage">
+            <div class="orbit"></div>
+            <div class="planet"></div>
+            <span class="node one"></span>
+            <span class="node two"></span>
+            <span class="node three"></span>
+            <div class="thumb-zone"></div>
+            <div class="hint-label">Swipe here</div>
+          </div>
+          <div class="copy">
+            <div class="tag">Option E</div>
+            <h2>Thumb Zone</h2>
+            <p>Most mobile-specific. It suggests where to place the finger without covering Saturn.</p>
+          </div>
+        </article>
+
+        <article class="card option-f">
+          <div class="stage">
+            <div class="orbit"></div>
+            <div class="planet"></div>
+            <span class="node one"></span>
+            <span class="node two"></span>
+            <span class="node three"></span>
+            <div class="direction-word">Swipe</div>
+            <div class="hint-label">Tap a project after</div>
+          </div>
+          <div class="copy">
+            <div class="tag">Option F</div>
+            <h2>Typographic Cue</h2>
+            <p>Most on-brand if you want the cue to feel editorial instead of icon-like.</p>
+          </div>
+        </article>
+      </section>
+
+      <div class="controls">
+        <a href="/#/space">Back to space</a>
+      </div>
+    </main>
+  </body>
+</html>

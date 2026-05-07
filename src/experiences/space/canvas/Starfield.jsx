@@ -1,63 +1,51 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
+
+function pseudoRandom(seed) {
+  const x = Math.sin(seed * 12.9898) * 43758.5453123;
+  return x - Math.floor(x);
+}
 
 export default function Starfield({ count = 2000 }) {
-  const meshRef = useRef();
-
-  const { positions, sizes } = useMemo(() => {
+  const pointsRef = useRef();
+  const positions = useMemo(() => {
     const positions = new Float32Array(count * 3);
-    const sizes = new Float32Array(count);
 
     for (let i = 0; i < count; i++) {
-      const radius = 50 + Math.random() * 200;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
+      const radius = 50 + pseudoRandom(i + 1) * 200;
+      const theta = pseudoRandom(i + 2) * Math.PI * 2;
+      const phi = Math.acos(2 * pseudoRandom(i + 3) - 1);
 
       positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
       positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
       positions[i * 3 + 2] = radius * Math.cos(phi);
-
-      sizes[i] = Math.random() * 0.15 + 0.02;
     }
 
-    return { positions, sizes };
+    return positions;
   }, [count]);
 
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-
-  // useEffect runs after render when meshRef.current is available
-  useEffect(() => {
-    if (!meshRef.current) return;
-    for (let i = 0; i < count; i++) {
-      dummy.position.set(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
-      dummy.scale.setScalar(sizes[i]);
-      dummy.updateMatrix();
-      meshRef.current.setMatrixAt(i, dummy.matrix);
-    }
-    meshRef.current.instanceMatrix.needsUpdate = true;
-  }, [count, positions, sizes, dummy]);
-
-  useFrame(({ clock }) => {
-    if (!meshRef.current) return;
-    const time = clock.getElapsedTime();
-    const batchSize = Math.floor(count / 10);
-    const offset = Math.floor(time * 2) % 10;
-
-    for (let i = offset * batchSize; i < (offset + 1) * batchSize && i < count; i++) {
-      dummy.position.set(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
-      const twinkle = 0.8 + 0.2 * Math.sin(time * 2 + i * 0.5);
-      dummy.scale.setScalar(sizes[i] * twinkle);
-      dummy.updateMatrix();
-      meshRef.current.setMatrixAt(i, dummy.matrix);
-    }
-    meshRef.current.instanceMatrix.needsUpdate = true;
+  useFrame((_, delta) => {
+    if (!pointsRef.current) return;
+    pointsRef.current.rotation.y += delta * 0.01;
+    pointsRef.current.rotation.x += delta * 0.002;
   });
 
   return (
-    <instancedMesh ref={meshRef} args={[null, null, count]}>
-      <sphereGeometry args={[1, 6, 6]} />
-      <meshBasicMaterial color="#ffffff" />
-    </instancedMesh>
+    <points ref={pointsRef} frustumCulled={false}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          args={[positions, 3]}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        color="#ffffff"
+        size={0.18}
+        sizeAttenuation
+        transparent
+        opacity={0.9}
+        depthWrite={false}
+      />
+    </points>
   );
 }

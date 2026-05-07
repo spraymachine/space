@@ -82,8 +82,30 @@ export default function InterestCard({ interest, onDismiss }) {
           </div>
         )}
 
-        <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>
-          {interest.emoji}
+        <div
+          style={{
+            width: '4rem',
+            height: '4rem',
+            margin: '0 auto 0.75rem',
+            display: 'grid',
+            placeItems: 'center',
+            fontSize: '3rem',
+          }}
+        >
+          {interest.icon ? (
+            <img
+              src={interest.icon}
+              alt=""
+              aria-hidden="true"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+              }}
+            />
+          ) : (
+            interest.emoji
+          )}
         </div>
 
         <p

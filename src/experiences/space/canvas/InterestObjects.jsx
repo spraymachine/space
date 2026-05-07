@@ -21,6 +21,15 @@ function createEmojiTexture(emoji, size = 128) {
   return texture;
 }
 
+function createIconTexture(icon) {
+  if (!icon) return null;
+
+  const texture = new THREE.TextureLoader().load(icon);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.needsUpdate = true;
+  return texture;
+}
+
 function createGlowTexture(color, size = 128) {
   const canvas = document.createElement('canvas');
   canvas.width = size;
@@ -46,6 +55,8 @@ function InterestSprite({ interest, discovered, onDiscover, onHover, hovered, gp
   const mobile = typeof window !== 'undefined' && window.innerWidth <= MOBILE_BREAKPOINT;
 
   const emojiTexture = useMemo(() => createEmojiTexture(interest.emoji), [interest.emoji]);
+  const iconTexture = useMemo(() => createIconTexture(interest.icon), [interest.icon]);
+  const spriteTexture = iconTexture || emojiTexture;
   const glowTexture = useMemo(
     () => createGlowTexture(discovered ? interest.color : '#FFD700'),
     [interest.color, discovered]
@@ -100,7 +111,7 @@ function InterestSprite({ interest, discovered, onDiscover, onHover, hovered, gp
         </sprite>
       )}
 
-      {/* Emoji sprite */}
+      {/* Interest sprite */}
       <sprite
         ref={spriteRef}
         position={interest.position}
@@ -125,7 +136,7 @@ function InterestSprite({ interest, discovered, onDiscover, onHover, hovered, gp
         }}
       >
         <spriteMaterial
-          map={emojiTexture}
+          map={spriteTexture}
           transparent
           opacity={discovered ? 0.5 : 1}
           depthWrite={false}

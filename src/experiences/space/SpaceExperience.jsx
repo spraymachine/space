@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, lazy, Suspense, useCallback } from 'react';
+import { useEffect, useRef, useState, lazy, Suspense, useCallback, startTransition } from 'react';
 import Lenis from '@studio-freight/lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -19,12 +19,21 @@ gsap.registerPlugin(ScrollTrigger);
 
 const SpaceCanvas = lazy(() => import('./canvas/SpaceCanvas'));
 
-export default function SpaceExperience({ navigate }) {
+function getPrefersReducedMotion() {
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch {
+    return false;
+  }
+}
+
+export default function SpaceExperience() {
   const gpuTier = useGpuTier();
   const scrollProgressRef = useScrollCamera();
-  const [introComplete, setIntroComplete] = useState(false);
+  const [introComplete, setIntroComplete] = useState(() => getPrefersReducedMotion());
+  const [sceneReady, setSceneReady] = useState(false);
   const lenisRef = useRef(null);
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReducedMotion = getPrefersReducedMotion();
 
   // Shared orbit state between ProjectsSection (DOM) and CameraRig (3D)
   const orbitAngleRef = useRef(0);
@@ -42,6 +51,9 @@ export default function SpaceExperience({ navigate }) {
     () => setIsTestimonialPaused((p) => !p),
     []
   );
+  const handleIntroComplete = useCallback(() => {
+    setIntroComplete(true);
+  }, []);
 
   // Discovery state — persisted to localStorage
   const [discoveredIds, setDiscoveredIds] = useState(() => {
@@ -61,17 +73,41 @@ export default function SpaceExperience({ navigate }) {
     setDiscoveredIds((prev) => {
       if (prev.includes(id)) return prev;
       const next = [...prev, id];
-      try { localStorage.setItem('space-discovered-interests', JSON.stringify(next)); } catch {}
+      try {
+        localStorage.setItem('space-discovered-interests', JSON.stringify(next));
+      } catch {
+        // Ignore storage failures so discovery still works in restricted contexts.
+      }
       return next;
     });
   }, []);
 
-  // Skip Big Bang for reduced motion users
   useEffect(() => {
-    if (prefersReducedMotion) {
-      setIntroComplete(true);
+    if (!introComplete || sceneReady) return;
+
+    let cancelled = false;
+
+    const enableScene = () => {
+      if (cancelled) return;
+      startTransition(() => {
+        setSceneReady(true);
+      });
+    };
+
+    if ('requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(enableScene, { timeout: 800 });
+      return () => {
+        cancelled = true;
+        window.cancelIdleCallback(idleId);
+      };
     }
-  }, [prefersReducedMotion]);
+
+    const timeoutId = window.setTimeout(enableScene, 180);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [introComplete, sceneReady]);
 
   // Initialize Lenis smooth scroll
   useEffect(() => {
@@ -89,13 +125,17 @@ export default function SpaceExperience({ navigate }) {
     lenisRef.current = lenis;
 
     // Connect Lenis to GSAP ScrollTrigger
-    lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    const handleLenisScroll = () => ScrollTrigger.update();
+    const tick = (time) => lenis.raf(time * 1000);
+
+    lenis.on('scroll', handleLenisScroll);
+    gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
 
     return () => {
+      lenis.off('scroll', handleLenisScroll);
+      gsap.ticker.remove(tick);
       lenis.destroy();
-      gsap.ticker.remove(lenis.raf);
     };
   }, []);
 
@@ -136,22 +176,24 @@ export default function SpaceExperience({ navigate }) {
       </a>
 
       {/* Big Bang intro overlay */}
-      {!prefersReducedMotion && <BigBang onComplete={() => setIntroComplete(true)} />}
+      {!prefersReducedMotion && <BigBang onComplete={handleIntroComplete} />}
 
       {/* 3D Canvas — fixed behind everything */}
-      <Suspense fallback={null}>
-        <SpaceCanvas
-          gpuTier={gpuTier}
-          scrollProgressRef={scrollProgressRef}
-          orbitAngleRef={orbitAngleRef}
-          isOrbiting={isOrbiting}
-          isTestimonialPaused={isTestimonialPaused}
-          onToggleTestimonialPause={toggleTestimonialPause}
-          discoveredIds={discoveredIds}
-          onDiscover={handleDiscover}
-          eventSource={containerRef}
-        />
-      </Suspense>
+      {sceneReady && (
+        <Suspense fallback={null}>
+          <SpaceCanvas
+            gpuTier={gpuTier}
+            scrollProgressRef={scrollProgressRef}
+            orbitAngleRef={orbitAngleRef}
+            isOrbiting={isOrbiting}
+            isTestimonialPaused={isTestimonialPaused}
+            onToggleTestimonialPause={toggleTestimonialPause}
+            discoveredIds={discoveredIds}
+            onDiscover={handleDiscover}
+            eventSource={containerRef}
+          />
+        </Suspense>
+      )}
 
       {/* Discovery counter */}
       <DiscoveryCounter

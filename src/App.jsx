@@ -38,7 +38,7 @@ export default function App() {
 
   return (
     <Suspense fallback={<LoadingScreen />}>
-      {effectiveRoute === '/space' && <SpaceExperience navigate={navigate} />}
+      {effectiveRoute === '/space' && <SpaceExperience />}
       {effectiveRoute === '/' && <ExperienceSelector navigate={navigate} />}
     </Suspense>
   );
