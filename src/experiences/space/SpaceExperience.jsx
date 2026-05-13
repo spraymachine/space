@@ -1,4 +1,16 @@
-import { useEffect, useRef, useState, lazy, Suspense, useCallback, startTransition } from 'react';
+import { useEffect, useRef, useState, lazy, Suspense, useCallback, startTransition, Component } from 'react';
+
+class CanvasErrorBoundary extends Component {
+  state = { error: null };
+  static getDerivedStateFromError(error) { return { error }; }
+  componentDidCatch(error, info) {
+    console.error('[CanvasErrorBoundary]', error?.message, error);
+  }
+  render() {
+    if (this.state.error) return null;
+    return this.props.children;
+  }
+}
 import Lenis from '@studio-freight/lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -180,6 +192,7 @@ export default function SpaceExperience() {
 
       {/* 3D Canvas — fixed behind everything */}
       {sceneReady && (
+        <CanvasErrorBoundary>
         <Suspense fallback={null}>
           <SpaceCanvas
             gpuTier={gpuTier}
@@ -193,6 +206,7 @@ export default function SpaceExperience() {
             eventSource={containerRef}
           />
         </Suspense>
+        </CanvasErrorBoundary>
       )}
 
       {/* Discovery counter */}

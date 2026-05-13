@@ -1,43 +1,33 @@
-import BasePlanet from './BasePlanet';
+import { useRef, useMemo } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { Clone } from '@react-three/drei';
+import * as THREE from 'three';
+import { useKTX2GLTF } from './useKTX2GLTF';
 
-export default function Earth({ position = [0, 0, 0], segments = 32 }) {
+export default function Earth({ position = [0, 0, 0] }) {
+  const { scene } = useKTX2GLTF('/3d-models/Earth-1-12756-fast-normal.glb');
+  const groupRef = useRef();
+
+  const scale = useMemo(() => {
+    try {
+      scene.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(scene);
+      if (box.isEmpty()) return 1;
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      return maxDim > 0 ? 2.4 / maxDim : 1;
+    } catch {
+      return 1;
+    }
+  }, [scene]);
+
+  useFrame(({ clock }) => {
+    if (groupRef.current) groupRef.current.rotation.y = clock.getElapsedTime() * 0.08;
+  });
+
   return (
-    <BasePlanet
-      position={position}
-      radius={1.2}
-      color="#1A5276"
-      emissive="#0E3D5C"
-      emissiveIntensity={0.15}
-      atmosphereColor="#5DADE2"
-      atmosphereScale={1.14}
-      rotationSpeed={0.08}
-      segments={segments}
-      surfaceDetail={{ color: '#1E8449', opacity: 0.35 }}
-      rimColor="#87CEEB"
-      rimIntensity={0.35}
-    >
-      {/* Ocean specular highlight layer */}
-      <mesh rotation={[0.15, 0.8, 0.05]}>
-        <sphereGeometry args={[1.202, Math.max(segments, 32), Math.max(segments, 32)]} />
-        <meshStandardMaterial
-          color="#2E86C1"
-          transparent
-          opacity={0.2}
-          roughness={0.3}
-          metalness={0.4}
-          depthWrite={false}
-        />
-      </mesh>
-      {/* Cloud layer */}
-      <mesh rotation={[0.4, 1.2, 0]}>
-        <sphereGeometry args={[1.22, Math.max(segments, 32), Math.max(segments, 32)]} />
-        <meshBasicMaterial
-          color="#ffffff"
-          transparent
-          opacity={0.08}
-          depthWrite={false}
-        />
-      </mesh>
-    </BasePlanet>
+    <group ref={groupRef} position={position}>
+      <Clone object={scene} scale={scale} />
+    </group>
   );
 }
