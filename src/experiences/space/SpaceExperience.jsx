@@ -224,7 +224,7 @@ export default function SpaceExperience() {
       )}
 
       {/* Scrollable DOM content */}
-      <div
+      <main
         id="space-scroll-container"
         style={{
           position: 'relative',
@@ -277,7 +277,7 @@ export default function SpaceExperience() {
             &larr; Back to Earth
           </button>
         </footer>
-      </div>
+      </main>
     </div>
   );
 }

@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     target: 'es2020',
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -15,6 +16,12 @@ export default defineConfig({
           if (id.includes('@studio-freight/lenis')) return 'vendor-lenis';
           if (id.includes('detect-gpu')) return 'vendor-detect';
         },
+        // Prevent loading-screen code bleeding into main chunk
+        experimentalMinChunkSize: 10_000,
+      },
+      treeshake: {
+        moduleSideEffects: false,
+        propertyReadSideEffects: false,
       },
     },
   },
