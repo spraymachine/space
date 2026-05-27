@@ -432,14 +432,14 @@ export default function ProjectsSection({ orbitAngleRef, onOrbitStateChange }) {
                 opacity: hasEntered ? pos.opacity : 0,
                 border: 'none',
                 background: 'transparent',
-                cursor: pos.isBehind ? 'default' : 'pointer',
+                cursor: 'pointer',
                 transition: 'transform 0.15s ease-out, opacity 0.15s ease-out',
-                display: 'flex',
+                display: pos.isBehind ? 'none' : 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 gap: isMobile ? '0.3rem' : '0.5rem',
                 padding: '0.5rem',
-                pointerEvents: pos.isBehind ? 'none' : 'auto',
+                pointerEvents: 'auto',
               }}
             >
               <div

@@ -12,6 +12,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["vite", "--port", "5174"],
       "port": 5174
+    },
+    {
+      "name": "goofy-jepsen",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", ".claude/worktrees/goofy-jepsen-718929", "--port", "5180"],
+      "port": 5180
     }
   ]
 }

@@ -60,6 +60,10 @@ export default function UranusTestimonialOrbit({
   const groupRef = useRef();
   const slotRefs = useRef([]);
   const cardDomRefs = useRef([]);
+  // Swipe velocity — applied each frame and damped (post-release inertia)
+  const swipeVelRef = useRef(0);
+  // True while a drag gesture is active — pauses auto-rotation
+  const isDraggingRef = useRef(false);
   const uranus = PLANET_POSITIONS.uranus;
 
   // Responsive config — re-computed on resize
@@ -87,12 +91,134 @@ export default function UranusTestimonialOrbit({
     };
   }, [portalElement]);
 
+  // Direct 1:1 drag — finger movement drives orbit rotation in real time.
+  // Listeners on portalElement; card events bubble up to it.
+  useEffect(() => {
+    const el = portalElement;
+    // pixels-per-radian sensitivity. ~250px drag ≈ ¼ turn.
+    const PX_PER_RAD = 320;
+
+    let startX = 0;
+    let startY = 0;
+    let lastX = 0;
+    let lastT = 0;
+    let lastDx = 0; // for release-inertia
+    let lockedHorizontal = false;
+    let isDragging = false;
+    let movedTotal = 0;
+
+    const beginDrag = (x, y) => {
+      startX = x;
+      startY = y;
+      lastX = x;
+      lastT = performance.now();
+      lastDx = 0;
+      lockedHorizontal = false;
+      isDragging = true;
+      movedTotal = 0;
+      // Kill any residual inertia and freeze auto rotation while dragging
+      swipeVelRef.current = 0;
+      isDraggingRef.current = true;
+    };
+
+    const updateDrag = (x, y) => {
+      if (!isDragging) return;
+      const dxTotal = x - startX;
+      const dyTotal = y - startY;
+
+      // Direction lock — first 8px decides
+      if (!lockedHorizontal) {
+        if (Math.abs(dxTotal) < 8 && Math.abs(dyTotal) < 8) return;
+        if (Math.abs(dyTotal) > Math.abs(dxTotal) * 1.2) {
+          // Vertical intent — abandon drag, let page scroll
+          isDragging = false;
+          isDraggingRef.current = false;
+          return;
+        }
+        lockedHorizontal = true;
+      }
+
+      const dxStep = x - lastX;
+      lastX = x;
+      lastT = performance.now();
+      lastDx = dxStep;
+      movedTotal += Math.abs(dxStep);
+
+      // Apply rotation immediately — 1:1 feel
+      if (groupRef.current) {
+        groupRef.current.rotation.y += dxStep / PX_PER_RAD;
+      }
+    };
+
+    const endDrag = () => {
+      if (!isDragging) {
+        isDraggingRef.current = false;
+        return;
+      }
+      isDragging = false;
+      isDraggingRef.current = false;
+
+      // Tap detection — no horizontal lock AND tiny movement → toggle pause
+      if (!lockedHorizontal && movedTotal < 6) {
+        onTogglePause?.();
+        return;
+      }
+
+      // Release inertia from last frame's dx
+      const dt = Math.max(1, performance.now() - lastT);
+      // px per ms → px per frame (~16ms)
+      const px_per_frame = (lastDx / dt) * 16;
+      swipeVelRef.current = (px_per_frame / PX_PER_RAD);
+    };
+
+    // Touch
+    const onTouchStart = (e) => {
+      const t = e.touches[0];
+      beginDrag(t.clientX, t.clientY);
+    };
+    const onTouchMove = (e) => {
+      const t = e.touches[0];
+      updateDrag(t.clientX, t.clientY);
+    };
+    const onTouchEnd = () => endDrag();
+
+    // Mouse
+    const onMouseDown = (e) => beginDrag(e.clientX, e.clientY);
+    const onMouseMove = (e) => updateDrag(e.clientX, e.clientY);
+    const onMouseUp = () => endDrag();
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: true });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    el.addEventListener('mousedown', onMouseDown);
+    // mousemove/mouseup on window so drag continues outside the card
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('touchcancel', onTouchEnd);
+      el.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, [portalElement, onTogglePause]);
+
   useFrame((state, delta) => {
     if (!groupRef.current) return;
 
-    // Auto rotation (unless paused)
-    if (!isPaused) {
+    // Auto rotation — skipped while user dragging or explicitly paused
+    if (!isPaused && !isDraggingRef.current) {
       groupRef.current.rotation.y += ROTATION_SPEED * delta;
+    }
+
+    // Post-release inertia — only when not actively dragging
+    if (!isDraggingRef.current && Math.abs(swipeVelRef.current) > 0.0001) {
+      groupRef.current.rotation.y += swipeVelRef.current;
+      swipeVelRef.current *= 0.93;
     }
 
     // Section-level fade based on scroll proximity to Uranus waypoint
@@ -113,11 +239,10 @@ export default function UranusTestimonialOrbit({
     // time; the other two (at ±120°, cos = −0.5) are behind and hidden.
     // A ±0.15 cosine blend zone (~17°) smooths the edge of visibility.
     const camPos = state.camera.position;
-    const { depthMin, depthRange } = cfg;
 
     // Uranus world position (constant, but read per-frame for correctness)
     tmpVec2.set(uranus[0], uranus[1], uranus[2]);
-    const camToUranusLen = tmpVec2.distanceTo(camPos); // ≈ distance camera→Uranus
+    const camToUranusLen = tmpVec2.distanceTo(camPos);
 
     for (let i = 0; i < slotRefs.current.length; i++) {
       const slot = slotRefs.current[i];
@@ -127,7 +252,6 @@ export default function UranusTestimonialOrbit({
       slot.getWorldPosition(tmpVec); // card world position
 
       // --- Hemisphere fade ---
-      // Vectors from Uranus to card and from Uranus to camera (unnormalised)
       const ux = tmpVec.x  - uranus[0];
       const uy = tmpVec.y  - uranus[1];
       const uz = tmpVec.z  - uranus[2];
@@ -136,20 +260,15 @@ export default function UranusTestimonialOrbit({
       const cz = camPos.z  - uranus[2];
       const dot = ux * cx + uy * cy + uz * cz;
       const cardLen = Math.sqrt(ux * ux + uy * uy + uz * uz) || 1;
-      const cosAngle = dot / (cardLen * camToUranusLen); // −1 (back) … +1 (front)
+      const cosAngle = dot / (cardLen * camToUranusLen);
 
-      // Smooth step across the ±0.15 blend zone around the equator
       let hemiFade;
       if (cosAngle >= 0.15)       hemiFade = 1;
       else if (cosAngle <= -0.15) hemiFade = 0;
       else                        hemiFade = (cosAngle + 0.15) / 0.30;
 
-      // --- Depth fade (distance from camera, for front-hemisphere cards) ---
-      const dist = tmpVec.distanceTo(camPos);
-      const t = Math.max(0, Math.min(1, (dist - depthMin) / depthRange));
-      const depthFade = 1 - t * 0.55; // front≈1.0, side≈0.7 — gentler roll-off
-
-      const finalOpacity = sectionFade * hemiFade * depthFade;
+      // No depth fade — cards are fully opaque when visible
+      const finalOpacity = sectionFade * hemiFade;
       dom.style.opacity = String(finalOpacity);
       dom.style.pointerEvents = finalOpacity > 0.3 ? 'auto' : 'none';
     }
@@ -200,27 +319,26 @@ export default function UranusTestimonialOrbit({
               >
                 <div
                   ref={(el) => (cardDomRefs.current[i] = el)}
-                  onClick={(e) => { e.stopPropagation(); onTogglePause?.(); }}
                   role="button"
                   tabIndex={0}
                   aria-label={isPaused ? 'Resume orbit' : 'Pause orbit'}
-                  style={{ opacity: 0, cursor: 'pointer', transition: 'opacity 0.25s ease-out', userSelect: 'none' }}
+                  style={{ opacity: 0, cursor: 'grab', transition: 'opacity 0.25s ease-out', userSelect: 'none' }}
                 >
-                  {/* Outer bezel — tinted with card accent */}
+                  {/* Outer bezel — opaque dark with accent border */}
                   <div
                     style={{
-                      background: `rgba(${rgb},0.10)`,
+                      background: `rgba(5,10,15,0.92)`,
                       border: `1px solid rgba(${rgb},0.50)`,
                       borderRadius: '22px',
                       padding: '3px',
-                      boxShadow: `0 24px 64px rgba(0,0,0,0.7), 0 0 48px rgba(${rgb},0.22), 0 0 0 1px rgba(${rgb},0.08) inset`,
+                      boxShadow: `0 24px 64px rgba(0,0,0,0.85), 0 0 48px rgba(${rgb},0.22), 0 0 0 1px rgba(${rgb},0.08) inset`,
                     }}
                   >
                     {/* Inner core */}
                     <div
                       style={{
                         position: 'relative',
-                        background: `linear-gradient(145deg, rgba(8,16,20,0.97) 0%, rgba(4,10,14,0.99) 100%)`,
+                        background: `linear-gradient(145deg, rgba(8,16,20,1) 0%, rgba(4,10,14,1) 100%)`,
                         borderRadius: '19px',
                         padding: '1.25rem 1.15rem 1.1rem',
                         boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.06)',
