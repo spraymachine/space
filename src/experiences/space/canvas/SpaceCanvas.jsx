@@ -90,12 +90,12 @@ export default function SpaceCanvas({
         <Starfield count={gpuTier.starCount} />
         <SunGlow position={[30, 15, 80]} />
 
-        <Earth position={PLANET_POSITIONS.earth} segments={seg} />
-        <Mars position={PLANET_POSITIONS.mars} segments={seg} />
-        <Jupiter position={PLANET_POSITIONS.jupiter} segments={seg} />
-        <Saturn position={PLANET_POSITIONS.saturn} segments={seg} />
-        <Uranus position={PLANET_POSITIONS.uranus} segments={seg} />
-        <Neptune position={PLANET_POSITIONS.neptune} segments={seg} />
+        <Earth position={PLANET_POSITIONS.earth} segments={seg} mobile={mobile} />
+        <Mars position={PLANET_POSITIONS.mars} segments={seg} mobile={mobile} />
+        <Jupiter position={PLANET_POSITIONS.jupiter} segments={seg} mobile={mobile} />
+        <Saturn position={PLANET_POSITIONS.saturn} segments={seg} mobile={mobile} />
+        <Uranus position={PLANET_POSITIONS.uranus} segments={seg} mobile={mobile} />
+        <Neptune position={PLANET_POSITIONS.neptune} segments={seg} mobile={mobile} />
 
         {nonCriticalSceneReady && (
           <InterestObjects

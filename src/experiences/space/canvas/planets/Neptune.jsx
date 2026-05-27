@@ -1,10 +1,10 @@
 import BasePlanet from './BasePlanet';
 
-export default function Neptune({ position = [0, 0, 0], segments = 32 }) {
+export default function Neptune({ position = [0, 0, 0], segments = 32, mobile = false }) {
   return (
     <BasePlanet
       position={position}
-      radius={1.0}
+      radius={mobile ? 1.4 : 1.0}
       color="#2E4057"
       emissive="#1B2838"
       emissiveIntensity={0.12}

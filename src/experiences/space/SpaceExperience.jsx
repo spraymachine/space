@@ -16,7 +16,6 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGpuTier } from './hooks/useGpuTier';
 import { useScrollCamera } from './hooks/useScrollCamera';
-import BigBang from './canvas/effects/BigBang';
 import HeroSection from './sections/HeroSection';
 import AboutSection from './sections/AboutSection';
 import SkillsSection from './sections/SkillsSection';
@@ -42,10 +41,9 @@ function getPrefersReducedMotion() {
 export default function SpaceExperience() {
   const gpuTier = useGpuTier();
   const scrollProgressRef = useScrollCamera();
-  const [introComplete, setIntroComplete] = useState(() => getPrefersReducedMotion());
+  const [introComplete] = useState(true);
   const [sceneReady, setSceneReady] = useState(false);
   const lenisRef = useRef(null);
-  const prefersReducedMotion = getPrefersReducedMotion();
 
   // Shared orbit state between ProjectsSection (DOM) and CameraRig (3D)
   const orbitAngleRef = useRef(0);
@@ -63,10 +61,6 @@ export default function SpaceExperience() {
     () => setIsTestimonialPaused((p) => !p),
     []
   );
-  const handleIntroComplete = useCallback(() => {
-    setIntroComplete(true);
-  }, []);
-
   // Discovery state — persisted to localStorage
   const [discoveredIds, setDiscoveredIds] = useState(() => {
     try {
@@ -151,15 +145,6 @@ export default function SpaceExperience() {
     };
   }, []);
 
-  // Prevent scroll during Big Bang
-  useEffect(() => {
-    if (!introComplete && lenisRef.current) {
-      lenisRef.current.stop();
-    } else if (introComplete && lenisRef.current) {
-      lenisRef.current.start();
-    }
-  }, [introComplete]);
-
   const containerRef = useRef(null);
 
   return (
@@ -186,9 +171,6 @@ export default function SpaceExperience() {
       >
         Skip to content
       </a>
-
-      {/* Big Bang intro overlay */}
-      {!prefersReducedMotion && <BigBang onComplete={handleIntroComplete} />}
 
       {/* 3D Canvas — fixed behind everything */}
       {sceneReady && (

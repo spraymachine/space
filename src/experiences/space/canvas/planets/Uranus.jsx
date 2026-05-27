@@ -1,10 +1,10 @@
 import BasePlanet from './BasePlanet';
 
-export default function Uranus({ position = [0, 0, 0], segments = 32 }) {
+export default function Uranus({ position = [0, 0, 0], segments = 32, mobile = false }) {
   return (
     <BasePlanet
       position={position}
-      radius={1.1}
+      radius={mobile ? 1.54 : 1.1}
       color="#5DADE2"
       emissive="#2E86C1"
       emissiveIntensity={0.08}

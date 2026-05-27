@@ -4,7 +4,7 @@ import { Clone } from '@react-three/drei';
 import * as THREE from 'three';
 import { useKTX2GLTF } from './useKTX2GLTF';
 
-export default function Saturn({ position = [0, 0, 0] }) {
+export default function Saturn({ position = [0, 0, 0], mobile = false }) {
   const { scene } = useKTX2GLTF('/3d-models/Saturn-1-120536-fast-normal.glb');
   const groupRef = useRef();
   const ringsRef = useRef();
@@ -16,23 +16,26 @@ export default function Saturn({ position = [0, 0, 0] }) {
       if (box.isEmpty()) return 1;
       const size = box.getSize(new THREE.Vector3());
       const maxDim = Math.max(size.x, size.y, size.z);
-      return maxDim > 0 ? 3.2 / maxDim : 1;
+      const base = maxDim > 0 ? 3.2 / maxDim : 1;
+      return base * (mobile ? 1.4 : 1);
     } catch {
       return 1;
     }
-  }, [scene]);
+  }, [scene, mobile]);
 
   useFrame(({ clock }) => {
     if (groupRef.current) groupRef.current.rotation.y = clock.getElapsedTime() * 0.1;
     if (ringsRef.current) ringsRef.current.rotation.z = Math.sin(clock.getElapsedTime() * 0.08) * 0.015;
   });
 
+  const ringScale = mobile ? 1.4 : 1;
+
   return (
     <group position={position} rotation={[0, 0, 0.47]}>
       <group ref={groupRef}>
         <Clone object={scene} scale={scale} />
       </group>
-      <group ref={ringsRef} rotation={[Math.PI / 2, 0, 0]}>
+      <group ref={ringsRef} rotation={[Math.PI / 2, 0, 0]} scale={ringScale}>
         <mesh>
           <ringGeometry args={[1.9, 2.2, 128]} />
           <meshBasicMaterial color="#EAD6A6" transparent opacity={0.35} side={THREE.DoubleSide} blending={THREE.AdditiveBlending} depthWrite={false} />
